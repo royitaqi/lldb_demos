@@ -3,7 +3,7 @@
 int g = 987;
 
 int main() {
-  int a = foo();
+  foo_ret a = foo();
   int b = 3;
-  return a * 10 + b; // 123
+  return a.ret * 10 + b; // 123
 }

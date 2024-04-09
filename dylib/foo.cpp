@@ -1,5 +1,7 @@
-int foo() {
+#include "foo.h"
+
+foo_ret foo() {
   int i = 1;
   int j = 2;
-  return i * 10 + j; // 12
+  return foo_ret { i * 10 + j }; // 12
 }
