@@ -1,5 +1,8 @@
 *.dSYM
-tmp
+tmp/
 *.log
+log.*
 *.o
 *.out
+*.dylib
+.vscode/

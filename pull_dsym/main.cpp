@@ -1,14 +1,13 @@
-int g_Global = 1432;
+int g = 987;
 
 int foo() {
-  return 1;
+  int i = 1;
+  int j = 2;
+  return i * 10 + j; // 12
 }
 
 int main() {
   int a = foo();
-  int b = 1234;
-  return a + b;
+  int b = 3;
+  return a * 10 + b; // 123
 }
-
-
-
