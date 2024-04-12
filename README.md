@@ -14,16 +14,21 @@ defaults write com.apple.DebugSymbols DBGShellCommands <full-path-to-script.py>
 A simple example of how to compile a hello world program and how to use LLDB to debug it.
 
 
-## pull_dsym
+## class
 
-A shell script can be used to resolve UUIDs into dsym files when LLDB requests such dsym files.
-
-Ref: https://lldb.llvm.org/use/symbols.html
+Set breakpoints by class and method names.
 
 
 ## dylib
 
 LLDB request dsyms for dylibs at target creation time.
+
+
+## pull_dsym
+
+A shell script can be used to resolve UUIDs into dsym files when LLDB requests such dsym files.
+
+Ref: https://lldb.llvm.org/use/symbols.html
 
 
 ## load_at_breakpoint
