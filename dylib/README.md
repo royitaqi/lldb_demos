@@ -10,8 +10,8 @@ defaults write com.apple.DebugSymbols DBGShellCommands <path-to-repo>/dylib/prin
 
 ```
 # Build
-cccc -dynamiclib foo.cpp -o foo.dylib
-cccc main.cpp foo.dylib
+cccc -dynamiclib foo.cpp bar.cpp -o foobar.dylib
+cccc main.cpp foobar.dylib
 
 # Strip debug info
 rm -rf full stripped

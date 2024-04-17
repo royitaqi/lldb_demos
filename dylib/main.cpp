@@ -1,9 +1,10 @@
 #include "foo.h"
+#include "bar.h"
 
 int g = 987;
 
 int main() {
   foo_ret a = foo();
-  int b = 3;
-  return a.ret * 10 + b; // 123
+  bar_ret b = bar();
+  return a.ret * 10 + b.ret; // 12 * 10 + 34 = 154
 }
