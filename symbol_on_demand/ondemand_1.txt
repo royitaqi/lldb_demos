@@ -1,0 +1,136 @@
+ [a.out] InitializeObject is skipped
+ [libc++.1.dylib] InitializeObject is skipped
+ [libc++.1.dylib] PreloadSymbols is skipped
+ [libSystem.B.dylib] InitializeObject is skipped
+ [libSystem.B.dylib] PreloadSymbols is skipped
+ [libc++abi.dylib] InitializeObject is skipped
+ [libc++abi.dylib] PreloadSymbols is skipped
+ [libcache.dylib] InitializeObject is skipped
+ [libcache.dylib] PreloadSymbols is skipped
+ [libcommonCrypto.dylib] InitializeObject is skipped
+ [libcommonCrypto.dylib] PreloadSymbols is skipped
+ [libcompiler_rt.dylib] InitializeObject is skipped
+ [libcompiler_rt.dylib] PreloadSymbols is skipped
+ [libcopyfile.dylib] InitializeObject is skipped
+ [libcopyfile.dylib] PreloadSymbols is skipped
+ [libcorecrypto.dylib] InitializeObject is skipped
+ [libcorecrypto.dylib] PreloadSymbols is skipped
+ [libdispatch.dylib] InitializeObject is skipped
+ [libdispatch.dylib] PreloadSymbols is skipped
+ [libdyld.dylib] InitializeObject is skipped
+ [libdyld.dylib] PreloadSymbols is skipped
+ [libkeymgr.dylib] InitializeObject is skipped
+ [libkeymgr.dylib] PreloadSymbols is skipped
+ [libmacho.dylib] InitializeObject is skipped
+ [libmacho.dylib] PreloadSymbols is skipped
+ [libquarantine.dylib] InitializeObject is skipped
+ [libquarantine.dylib] PreloadSymbols is skipped
+ [libremovefile.dylib] InitializeObject is skipped
+ [libremovefile.dylib] PreloadSymbols is skipped
+ [libsystem_asl.dylib] InitializeObject is skipped
+ [libsystem_asl.dylib] PreloadSymbols is skipped
+ [libsystem_blocks.dylib] InitializeObject is skipped
+ [libsystem_blocks.dylib] PreloadSymbols is skipped
+ [libsystem_c.dylib] InitializeObject is skipped
+ [libsystem_c.dylib] PreloadSymbols is skipped
+ [libsystem_collections.dylib] InitializeObject is skipped
+ [libsystem_collections.dylib] PreloadSymbols is skipped
+ [libsystem_configuration.dylib] InitializeObject is skipped
+ [libsystem_configuration.dylib] PreloadSymbols is skipped
+ [libsystem_containermanager.dylib] InitializeObject is skipped
+ [libsystem_containermanager.dylib] PreloadSymbols is skipped
+ [libsystem_coreservices.dylib] InitializeObject is skipped
+ [libsystem_coreservices.dylib] PreloadSymbols is skipped
+ [libsystem_darwin.dylib] InitializeObject is skipped
+ [libsystem_darwin.dylib] PreloadSymbols is skipped
+ [libsystem_darwindirectory.dylib] InitializeObject is skipped
+ [libsystem_darwindirectory.dylib] PreloadSymbols is skipped
+ [libsystem_dnssd.dylib] InitializeObject is skipped
+ [libsystem_dnssd.dylib] PreloadSymbols is skipped
+ [libsystem_eligibility.dylib] InitializeObject is skipped
+ [libsystem_eligibility.dylib] PreloadSymbols is skipped
+ [libsystem_featureflags.dylib] InitializeObject is skipped
+ [libsystem_featureflags.dylib] PreloadSymbols is skipped
+ [libsystem_info.dylib] InitializeObject is skipped
+ [libsystem_info.dylib] PreloadSymbols is skipped
+ [libsystem_m.dylib] InitializeObject is skipped
+ [libsystem_m.dylib] PreloadSymbols is skipped
+ [libsystem_malloc.dylib] InitializeObject is skipped
+ [libsystem_malloc.dylib] PreloadSymbols is skipped
+ [libsystem_networkextension.dylib] InitializeObject is skipped
+ [libsystem_networkextension.dylib] PreloadSymbols is skipped
+ [libsystem_notify.dylib] InitializeObject is skipped
+ [libsystem_notify.dylib] PreloadSymbols is skipped
+ [libsystem_sandbox.dylib] InitializeObject is skipped
+ [libsystem_sandbox.dylib] PreloadSymbols is skipped
+ [libsystem_sanitizers.dylib] InitializeObject is skipped
+ [libsystem_sanitizers.dylib] PreloadSymbols is skipped
+ [libsystem_secinit.dylib] InitializeObject is skipped
+ [libsystem_secinit.dylib] PreloadSymbols is skipped
+ [libsystem_kernel.dylib] InitializeObject is skipped
+ [libsystem_kernel.dylib] PreloadSymbols is skipped
+ [libsystem_platform.dylib] InitializeObject is skipped
+ [libsystem_platform.dylib] PreloadSymbols is skipped
+ [libsystem_pthread.dylib] InitializeObject is skipped
+ [libsystem_pthread.dylib] PreloadSymbols is skipped
+ [libsystem_symptoms.dylib] InitializeObject is skipped
+ [libsystem_symptoms.dylib] PreloadSymbols is skipped
+ [libsystem_trace.dylib] InitializeObject is skipped
+ [libsystem_trace.dylib] PreloadSymbols is skipped
+ [libunwind.dylib] InitializeObject is skipped
+ [libunwind.dylib] PreloadSymbols is skipped
+ [libxpc.dylib] InitializeObject is skipped
+ [libxpc.dylib] PreloadSymbols is skipped
+ [libobjc.A.dylib] InitializeObject is skipped
+ [libobjc.A.dylib] PreloadSymbols is skipped
+ [liboah.dylib] InitializeObject is skipped
+ [liboah.dylib] PreloadSymbols is skipped
+ [a.out] PreloadSymbols is skipped
+ --- ^ lldb a.out ---
+ --- v (lldb) b main ---
+ [a.out] FindFunctions(main) is NOT skipped - found match in symtab
+ [a.out] Hydrate debug info
+ [a.out] ParseSupportFiles is not skipped: explicitly allowed to support breakpoint
+ [libc++.1.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libSystem.B.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libc++abi.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libcache.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libcommonCrypto.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libcompiler_rt.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libcopyfile.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libcorecrypto.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libdispatch.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libdyld.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libkeymgr.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libmacho.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libquarantine.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libremovefile.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_asl.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_blocks.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_c.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_collections.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_configuration.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_containermanager.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_coreservices.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_darwin.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_darwindirectory.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_dnssd.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_eligibility.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_featureflags.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_info.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_m.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_malloc.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_networkextension.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_notify.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_sandbox.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_sanitizers.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_secinit.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_kernel.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_platform.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_pthread.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_symptoms.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libsystem_trace.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libunwind.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libxpc.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [libobjc.A.dylib] FindFunctions(main) is skipped - fail to find match in symtab
+ [liboah.dylib] FindFunctions(main) is skipped - fail to find match in symtab
