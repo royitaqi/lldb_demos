@@ -1,18 +1,18 @@
 # Setup
 
-Need the following setup in macOS:
-```
-% cat > ~/.lldbinit
-settings set symbols.load-on-demand true
-log enable -f /tmp/ondemand.txt lldb on-demand
-```
+
 
 # Hydration triggered by name breakpoint
 
 ```
 cccc main.cpp
-lldb a.out
-(lldb) b main
+lldb
+
+(lldb)
+settings set symbols.load-on-demand true
+log enable -f /tmp/ondemand.txt lldb on-demand
+target create a.out
+b main
 ```
 
 Observe the log being printed in `/tmp/ondemand.txt``.
