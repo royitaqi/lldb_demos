@@ -1,0 +1,167 @@
+(lldb) script import fblldbinit
+(lldb) settings set use-module-list-dyld true
+(lldb) command script import fblldb.commands.TargetstatsCommand
+(lldb) command script add -c fblldb.commands.TargetstatsCommand.targetstats targetstats
+(lldb) command script import fblldb.commands.thread
+(lldb) command script add -c fblldb.commands.thread.ThreadApplyCommand thread-apply
+(lldb) command script import fblldb.commands.DebugstatsCommand
+(lldb) command script add -f fblldb.commands.DebugstatsCommand.debugstats debugstats
+(lldb) command script import fblldb.commands.FBContextCommand
+(lldb) command script add -c fblldb.commands.FBContextCommand.FBContextCommand fbcontext
+(lldb) command script import fblldb.commands.silent
+(lldb) command script add -c fblldb.commands.silent.SilentCommand silent
+(lldb) settings set plugin.process.gdb-remote.use-libraries-svr4 true
+(lldb) command script import fblldb.commands.ptype
+(lldb) command script add -c fblldb.commands.ptype.PTypeCommand ptype
+(lldb) command script import fblldb.commands.vtable
+(lldb) command script add -o -c fblldb.commands.vtable.VTableCommand vtable
+(lldb) command script import fblldb.commands.diagnose_unwind
+(lldb) command script add -c fblldb.commands.diagnose_unwind.Command diagnose_unwind
+(lldb) command script import fblldb.commands.GDBCommand
+(lldb) command script add -f fblldb.commands.GDBCommand.gdb_command gdb-command
+(lldb) command script import fblldb.commands.TracingCommands
+(lldb) command script add -c fblldb.commands.TracingCommands.TraceStepCommand trace-step
+(lldb) command script import fblldb.commands.windbg
+(lldb) command script add -f fblldb.commands.windbg.windbg_command windbg
+(lldb) command script import fblldb.commands.folly_fibers
+(lldb) command container add -o -h "All things folly::fibers" fiber
+(lldb) command script add -o -c fblldb.commands.folly_fibers.FiberInfoCommand fiber info
+(lldb) type synthetic add "folly::fibers::FiberManager" --python-class fblldb.commands.folly_fibers.FiberManagerSyntheticFormatter
+(lldb) type summary add "folly::fibers::FiberManager" --python-function fblldb.commands.folly_fibers.fiber_manager_summary
+(lldb) type synthetic add "folly::fibers::Fiber" --python-class fblldb.commands.folly_fibers.FiberSyntheticFormatter
+(lldb) type summary add "folly::fibers::Fiber" --python-function fblldb.commands.folly_fibers.fiber_summary
+(lldb) command script import fblldb.commands.auto_debuginfo
+(lldb) command script add -c fblldb.commands.auto_debuginfo.AutoLoadDebugInfo auto-load-debuginfo
+(lldb) command script import fblldb.commands.RunToBinaryEntry
+(lldb) command script add -c fblldb.commands.RunToBinaryEntry.RunToBinaryEntry run-to-binary-entry
+(lldb) command script import fblldb.commands.ScriptBridgeCommand
+(lldb) command script add -c fblldb.commands.ScriptBridgeCommand.ScriptBridgeCommand script-bridge
+(lldb) command script import fblldb.commands.btgrep
+(lldb) command script add -o -c fblldb.commands.btgrep.BackTraceGrep btgrep
+(lldb) command script add -o -c fblldb.commands.btgrep.BackTraceTop bttop
+(lldb) command script import fblldb.commands.fbpaste
+(lldb) command script add -c fblldb.commands.fbpaste.FBPaste fbpaste
+(lldb) command script import fblldb.commands.DebuginfoCommand
+(lldb) command script add -f fblldb.commands.DebuginfoCommand.debuginfo_command debuginfo
+(lldb) command script import fblldb.commands.linuxdyld
+(lldb) command script add -c fblldb.commands.linuxdyld.dyld_lldb_command dyld
+(lldb) command script import fblldb.commands.folly_singleton_list_all
+(lldb) command script add -c fblldb.commands.folly_singleton_list_all.FollySingletonListAllCommand folly_singleton_list_all
+(lldb) command script add -c fblldb.commands.folly_singleton_list_all.FollySingletonGetCommand folly_singleton_get
+(lldb) command script import fblldb.commands.co_bt
+(lldb) command script add -c fblldb.commands.co_bt.LldbCoroBacktraceCommand co_bt
+(lldb) command script add -c fblldb.commands.co_bt.LldbCoroAsyncStackRootsCommand co_async_stack_roots
+(lldb) command script import fblldb.commands.ITraceCommand
+(lldb) command script add -c fblldb.commands.ITraceCommand.ITraceCommand itracing
+(lldb) command script import fblldb.commands.fbsymbols
+(lldb) command script add -c fblldb.commands.fbsymbols.FBSymbolsCommand fbsymbols
+(lldb) command script add -c fblldb.commands.fbsymbols.FbGsymCommand fb-gsym
+(lldb) command script add -c fblldb.commands.fbsymbols.TriffidCommand triffid
+(lldb) command script import fblldb.commands.RageShakeCommand
+(lldb) command script add -c fblldb.commands.RageShakeCommand.RageShakeCommand rage-shake
+(lldb) command script import fblldb.commands.timeit
+(lldb) command script add -f fblldb.commands.timeit.timeit timeit
+(lldb) command script import fblldb.commands.coredumper
+(lldb) command script add -c fblldb.commands.coredumper.CoreDumper coredumper_all_threads_bt
+(lldb) command script import fblldb.commands.DiagnosticsCommand
+(lldb) command script add -c fblldb.commands.DiagnosticsCommand.FBDiagnosticsCommand fbdiagnostics
+(lldb) command script import fblldb.commands.folly_threadpools
+(lldb) command script add -c fblldb.commands.folly_threadpools.FollyThreadPoolCommand folly_threadpool
+(lldb) command script import fblldb.commands.sbt
+(lldb) command script add -c fblldb.commands.sbt.Command sbt
+(lldb) command script import fblldb.commands.minidump
+(lldb) command script add -c fblldb.commands.minidump.MinidumpCommand minidump
+(lldb) command script import fblldb.formatters.folly_concurrent_lazy
+(lldb) type synthetic add -x "(^folly::ConcurrentLazy<.*$)" --python-class fblldb.formatters.folly_concurrent_lazy.ConcurrentLazyFormatter
+(lldb) type summary add --expand --hide-empty --no-value -x "(^folly::ConcurrentLazy<.*$)" --python-function fblldb.formatters.folly_concurrent_lazy.ConcurrentLazySummary
+(lldb) command script import fblldb.formatters.folly_dynamic
+(lldb) type synthetic add "folly::dynamic" --python-class fblldb.formatters.folly_dynamic.SyntheticFormatter
+(lldb) type summary add "folly::dynamic" --python-function fblldb.formatters.folly_dynamic.summary
+(lldb) command script import fblldb.formatters.folly_range
+(lldb) type synthetic add -x "(^folly::Range<.*$)|(^folly::StringPiece$)" --python-class fblldb.formatters.folly_range.SyntheticFormatter
+(lldb) type summary add -x "(^folly::Range<.*$)|(^folly::StringPiece$)" --python-function fblldb.formatters.folly_range.summary
+(lldb) command script import fblldb.formatters.folly_network_address
+(lldb) type summary add -x "(^folly::IPAddress)|(^folly::SocketAddress$)|(^folly::IPAddressV4$)|(^folly::IPAddressV6$)" --python-function fblldb.formatters.folly_network_address.summary
+(lldb) command script import fblldb.formatters.folly_fixed_string
+(lldb) type summary add --hide-empty -x "(^folly::FixedString<.*$)" --python-function "fblldb.formatters.folly_fixed_string.summary"
+(lldb) command script import fblldb.formatters.folly_fbstring
+(lldb) type summary add -x "^(folly|std)::fbstring" --python-function fblldb.formatters.folly_fbstring.summary
+(lldb) command script import fblldb.formatters.folly_lazy
+(lldb) type synthetic add -x "(^folly::detail::Lazy<.*$)" --python-class fblldb.formatters.folly_lazy.LazyFormatter
+(lldb) type summary add --expand --hide-empty --no-value -x "(^folly::detail::Lazy<.*$)" --python-function fblldb.formatters.folly_lazy.LazySummary
+(lldb) command script import fblldb.formatters.mcf_boolean
+(lldb) type summary add -s "${var._value%B}" --recognizer-function fblldb.formatters.mcf_boolean.recognizer___MCFBoolean_no_apple
+(lldb) command script import fblldb.formatters.folly_f14
+(lldb) type synthetic add -x "(^folly::F14NodeMap<.*$)|(^folly::F14BasicMap<.*$)|(^folly::F14ValueMap<.*$)|(^folly::F14VectorMap<.*$)|(^folly::F14FastMap<.*$)|(^folly::F14NodeSet<.*$)|(^folly::F14ValueSet<.*$)|(^folly::F14VectorSet<.*$)|(^folly::F14FastSet<.*$)" --python-class fblldb.formatters.folly_f14.SyntheticFormatter
+(lldb) type summary add -x "(^folly::F14NodeMap<.*$)|(^folly::F14BasicMap<.*$)|(^folly::F14ValueMap<.*$)|(^folly::F14VectorMap<.*$)|(^folly::F14FastMap<.*$)|(^folly::F14NodeSet<.*$)|(^folly::F14ValueSet<.*$)|(^folly::F14VectorSet<.*$)|(^folly::F14FastSet<.*$)" --python-function fblldb.formatters.folly_f14.summary
+(lldb) command script import fblldb.formatters.folly_sparse_bitset
+(lldb) type synthetic add -x "(^folly::SparseByteSet$)" --python-class fblldb.formatters.folly_sparse_bitset.SparseByteSetFormatter
+(lldb) type summary add --expand -x "(^folly::SparseByteSet$)" --summary-string "size=${var.size_}"
+(lldb) command script import fblldb.formatters.mcf_collections
+(lldb) type synthetic add -l fblldb.formatters.mcf_collections.Formatter --recognizer-function fblldb.formatters.mcf_collections.recognizer___MCFDictionary___MCFSet__no_apple
+(lldb) type summary add -F fblldb.formatters.mcf_collections.summary --recognizer-function fblldb.formatters.mcf_collections.recognizer___MCFDictionary___MCFSet__no_apple
+(lldb) command script import fblldb.formatters.msys_string
+(lldb) type summary add --summary-string "${var.str%s}" dasm_internal_memory_managed_str
+(lldb) type summary add -F fblldb.formatters.msys_string.summary --recognizer-function fblldb.formatters.msys_string.recognizer___MCFDirectPrivateDoNotUse_String_no_apple
+(lldb) type summary add -s "${var._base}" --recognizer-function fblldb.formatters.msys_string.recognizer___MCFString_no_apple
+(lldb) command script import fblldb.formatters.mcf_type
+(lldb) type summary add -F fblldb.formatters.mcf_type.mcf_type_summary --recognizer-function fblldb.formatters.mcf_type.recognizer_all_mcf_types_apple
+(lldb) type synthetic add -l fblldb.formatters.mcf_type.Formatter --recognizer-function fblldb.formatters.mcf_type.recognizer_all_mcf_types_apple
+(lldb) type summary add -F fblldb.formatters.mcf_type.mcf_runtime_base_summary --recognizer-function fblldb.formatters.mcf_type.recognizer___MCFRuntimeBase_no_apple
+(lldb) type summary add -F fblldb.formatters.mcf_type.mcf_type_summary --recognizer-function fblldb.formatters.mcf_type.recognizer_MCFTypeRef_no_apple
+(lldb) type synthetic add -l fblldb.formatters.mcf_type.Formatter --recognizer-function fblldb.formatters.mcf_type.recognizer_MCFTypeRef_no_apple
+(lldb) type summary add -F fblldb.formatters.mcf_type.mcf_type_summary --recognizer-function fblldb.formatters.mcf_type.recognizer_fake_mcf_types_no_apple
+(lldb) type synthetic add -l fblldb.formatters.mcf_type.Formatter --recognizer-function fblldb.formatters.mcf_type.recognizer_fake_mcf_types_no_apple
+(lldb) command script import fblldb.formatters.mcf_number
+(lldb) type summary add -F fblldb.formatters.mcf_number.summary --recognizer-function fblldb.formatters.mcf_number.recognizer___MCFNumber_no_apple
+(lldb) command script import fblldb.formatters.folly_optional
+(lldb) type synthetic add -x "(^folly::Optional<.*$)" --python-class fblldb.formatters.folly_optional.OptionalFormatter
+(lldb) type summary add --expand --hide-empty --no-value -x "(^folly::Optional<.*$)" --python-function fblldb.formatters.folly_optional.OptionalSummary
+(lldb) command script import fblldb.formatters.folly_atomic_linked_list
+(lldb) type synthetic add -x "(^folly::AtomicLinkedList<.*$)" --python-class fblldb.formatters.folly_atomic_linked_list.AtomicLLSyntheticFormatter
+(lldb) type summary add --expand --hide-empty --no-value -x "(^folly::AtomicLinkedList<.*$)" --summary-string "size=${svar%#}"
+(lldb) command script import fblldb.formatters.folly_concurrent_bitset
+(lldb) type synthetic add -x "(^folly::ConcurrentBitSet<.*$)" --python-class fblldb.formatters.folly_concurrent_bitset.ConcurrentBitsFormatter
+(lldb) type summary add --expand --hide-empty --no-value -x "(^folly::ConcurrentBitSet<.*$)" --summary-string "size=${svar%#}"
+(lldb) command script import fblldb.formatters.folly_fbvector
+(lldb) type summary add --expand --hide-empty --no-value -x "^folly::fbvector<.*$" --summary-string "size=${svar%#}"
+(lldb) type synthetic add -x "^folly::fbvector<.*$" -l fblldb.formatters.folly_fbvector.FBVectorFormatter
+(lldb) command script import fblldb.formatters.multifeed_quickhash
+(lldb) type synthetic add -x "(^facebook::multifeed::QuickHashMap<.*$)|(^facebook::multifeed::QuickHashSet<.*$)" --python-class fblldb.formatters.multifeed_quickhash.QuickHashSyntheticFormatter
+(lldb) type summary add --expand -x "(^facebook::multifeed::QuickHashMap<.*$)|(^facebook::multifeed::QuickHashSet<.*$)" --summary-string "${svar%#} items"
+(lldb) command script import fblldb.formatters.mcf_array
+(lldb) type synthetic add -l fblldb.formatters.mcf_array.Formatter --recognizer-function fblldb.formatters.mcf_array.recognizer___MCFArray_no_apple
+(lldb) type summary add -e -s "count=${var._count%d}, mutable=${var._isMutable%B}" --recognizer-function fblldb.formatters.mcf_array.recognizer___MCFArray_no_apple
+(lldb) command script import fblldb.logging.fblogging
+(lldb) command script import fblldb.libpython_lldb
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyLongObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyFloatObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyBytesObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyUnicodeObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyListObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyTupleObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PySetObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer PyDictObject
+(lldb) type summary add -F fblldb.libpython_lldb.pretty_printer defdictobject
+(lldb) command script add -o -c fblldb.libpython_lldb.PyBt py-bt
+(lldb) command script add -o -c fblldb.libpython_lldb.PyList py-list
+(lldb) command script add -o -c fblldb.libpython_lldb.PyUp py-up
+(lldb) command script add -o -c fblldb.libpython_lldb.PyDown py-down
+(lldb) command script add -o -c fblldb.libpython_lldb.PyLocals py-locals
+(lldb) command script import fblldb.folly_fibers
+(lldb) command script add -o -c fblldb.folly_fibers.PluginHook enable-fibers
+(lldb) log enable lldb commands
+(lldb) target create a.out
+Current executable set to '/Users/royshi/demo/log_categories/a.out' (arm64).
+(lldb) b main
+(lldb) breakpoint set --name 'main'
+Breakpoint 1: where = a.out`main + 16 at main.cpp:6:15, address = 0x0000000100003f7c
+Breakpoint 1: where = a.out`main + 16 at main.cpp:6:15, address = 0x0000000100003f7c
+(lldb) r
+Process 42907 launched: '/Users/royshi/demo/log_categories/a.out' (arm64)
+(lldb) n
+(lldb) p a
+(foo_ret)  (ret = 12)
+(lldb) settings set interpreter.save-session-on-quit true
+(lldb) settings set  interpreter.save-session-directory .
