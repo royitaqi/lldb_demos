@@ -23,8 +23,6 @@ dddddl bar.dylib.dSYM
 Set file/line breakpoint and see them get resolved:
 ```
 $ lldb a.out
-(lldb) target create "a.out"
-Current executable set to '/Users/<username>/demo/inline_functions/a.out' (arm64).
 (lldb) br set --file inline_in_header.h --line 2
 Breakpoint 1: where = foo.dylib`int getRetInHeader<foo_ret>(foo_ret const&) + 8 at inline_in_header.h:2:12, address = 0x0000000000003f84
 (lldb) br set --file inline_in_source.cpp --line 2
@@ -34,8 +32,6 @@ Breakpoint 2: where = bar.dylib`int getRetInSource<bar_ret>(bar_ret const&) + 8 
 Change settings in LLDB to resolve file/line breakpoints for inline functions ONLY IN HEADER FILES:
 ```
 $ lldb a.out
-(lldb) target create "a.out"
-Current executable set to '/Users/<username>/demo/inline_functions/a.out' (arm64).
 (lldb) settings set target.inline-breakpoint-strategy headers
 (lldb) br set --file inline_in_header.h --line 2
 Breakpoint 1: where = foo.dylib`int getRetInHeader<foo_ret>(foo_ret const&) + 8 at inline_in_header.h:2:12, address = 0x0000000000003f84
@@ -47,8 +43,6 @@ WARNING:  Unable to resolve breakpoint to any actual locations.
 Change settings in LLDB to NEVER resolve file/line breakpoints for inline functions:
 ```
 $ lldb a.out
-(lldb) target create "a.out"
-Current executable set to '/Users/<username>/demo/inline_functions/a.out' (arm64).
 (lldb) settings set target.inline-breakpoint-strategy never
 (lldb) br set --file inline_in_header.h --line 2
 Breakpoint 1: no locations (pending).
