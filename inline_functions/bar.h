@@ -3,3 +3,4 @@ struct bar_ret {
 };
 
 bar_ret bar();
+int getBarRet();

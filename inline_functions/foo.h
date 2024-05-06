@@ -3,3 +3,4 @@ struct foo_ret {
 };
 
 foo_ret foo();
+int getFooRet();

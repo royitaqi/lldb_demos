@@ -1,52 +1,57 @@
 # Setup
 
-Need the following setup in macOS:
+
+# Run
+
+Compile and run:
 ```
-defaults delete com.apple.DebugSymbols
-defaults write com.apple.DebugSymbols DBGShellCommands <path-to-repo>/dylib/print_requests.py
+cccc -dynamiclib foo.cpp -o foo.dylib
+cccc -dynamiclib bar.cpp -o bar.dylib
+cccc main.cpp foo.dylib bar.dylib
+./a.out
+echo $?
 ```
 
-# Build and strip debug info
-
+See that the inline function `getRet` in `inline.h` are compiled into `foo.dylib` and `bar.dylib`:
 ```
-# Build
-cccc -dynamiclib foo.cpp bar.cpp -o foobar.dylib
-cccc main.cpp foobar.dylib
-
-# Strip debug info
-rm -rf full stripped
-mkdir full stripped
-mv a.out.dSYM full
-mv foo.dylib.dSYM full
-cp -r full/a.out.dSYM/ stripped/a.out.dSYM
-cp -r full/foo.dylib.dSYM/ stripped/foo.dylib.dSYM
-llvm-objcopy --only-section=__DWARF,__debug_line full/a.out.dSYM/Contents/Resources/DWARF/a.out stripped/a.out.dSYM/Contents/Resources/DWARF/a.out
-llvm-objcopy --only-section=__DWARF,__debug_line full/foo.dylib.dSYM/Contents/Resources/DWARF/foo.dylib stripped/foo.dylib.dSYM/Contents/Resources/DWARF/foo.dylib
-ls -l full/a.out.dSYM/Contents/Resources/DWARF/a.out stripped/a.out.dSYM/Contents/Resources/DWARF/a.out full/foo.dylib.dSYM/Contents/Resources/DWARF/foo.dylib stripped/foo.dylib.dSYM/Contents/Resources/DWARF/foo.dylib
+dddddl foo.dylib.dSYM
+dddddl bar.dylib.dSYM
 ```
 
+Set file/line breakpoint and see them get resolved:
 ```
-llvm-objcopy \
-  --remove-section=__DWARF,__debug_aranges \
-  --remove-section=__DWARF,__debug_info \
-  --remove-section=__DWARF,__debug_abbrev \
-  --remove-section=__DWARF,__debug_str \
-  --remove-section=__DWARF,__apple_names \
-  --remove-section=__DWARF,__apple_namespac \
-  --remove-section=__DWARF,__apple_types \
-  --remove-section=__DWARF,__apple_objc \
-  full/a.out.dSYM/Contents/Resources/DWARF/a.out stripped/a.out.dSYM/Contents/Resources/DWARF/a.out
+$ lldb a.out
+(lldb) target create "a.out"
+Current executable set to '/Users/<username>/demo/inline_functions/a.out' (arm64).
+(lldb) br set --file inline_in_header.h --line 2
+Breakpoint 1: where = foo.dylib`int getRetInHeader<foo_ret>(foo_ret const&) + 8 at inline_in_header.h:2:12, address = 0x0000000000003f84
+(lldb) br set --file inline_in_source.cpp --line 2
+Breakpoint 2: where = bar.dylib`int getRetInSource<bar_ret>(bar_ret const&) + 8 at inline_in_source.cpp:2:12, address = 0x0000000000003f84
 ```
 
+Change settings in LLDB to resolve file/line breakpoints for inline functions ONLY IN HEADER FILES:
 ```
-llvm-objcopy \
-  full/a.out.dSYM/Contents/Resources/DWARF/a.out stripped/a.out.dSYM/Contents/Resources/DWARF/a.out
+$ lldb a.out
+(lldb) target create "a.out"
+Current executable set to '/Users/<username>/demo/inline_functions/a.out' (arm64).
+(lldb) settings set target.inline-breakpoint-strategy headers
+(lldb) br set --file inline_in_header.h --line 2
+Breakpoint 1: where = foo.dylib`int getRetInHeader<foo_ret>(foo_ret const&) + 8 at inline_in_header.h:2:12, address = 0x0000000000003f84
+(lldb) br set --file inline_in_source.cpp --line 2
+Breakpoint 2: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
 ```
 
-# Start debug session
-
+Change settings in LLDB to NEVER resolve file/line breakpoints for inline functions:
 ```
-: > log.txt
-dddd --uuid a.out full/a.out.dSYM stripped/a.out.dSYM foo.dylib full/foo.dylib.dSYM stripped/foo.dylib.dSYM
-lldb a.out
+$ lldb a.out
+(lldb) target create "a.out"
+Current executable set to '/Users/<username>/demo/inline_functions/a.out' (arm64).
+(lldb) settings set target.inline-breakpoint-strategy never
+(lldb) br set --file inline_in_header.h --line 2
+Breakpoint 1: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+(lldb) br set --file inline_in_source.cpp --line 2
+Breakpoint 2: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
 ```

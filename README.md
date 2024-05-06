@@ -1,4 +1,4 @@
-# lldb_demos
+# Demos
 A series of demos when learning and working with LLDB.
 
 For the demos which includes a python script to print debug info requets from LLDB, type the following commands to set up the script.
@@ -34,3 +34,23 @@ Ref: https://lldb.llvm.org/use/symbols.html
 ## load_at_breakpoint
 
 LLDB does NOT request dsyms when a breakpoint is set, nor when a breakpoint is triggered.
+
+
+## inline_functions
+
+* Inline functions are compiled into each binary's `.debug_lines` table.
+* `settings set target.inline-breakpoint-strategy <always|headers|never>` to control whether or not to resolve inline functions for source and header files.
+
+
+# Common Setup
+
+Command line aliases
+```
+cccc='xcrun clang++ -g -O0 -std=gnu++11 -stdlib=libc++'
+dddd=dwarfdump
+ddddan='dwarfdump --apple-names'
+dddddl='dwarfdump --debug-line'
+hhhh='objdump --section-headers'
+oooo='otool -lv'
+ssss='dsymutil -s'
+```
