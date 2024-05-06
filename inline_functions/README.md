@@ -1,5 +1,7 @@
 # Setup
 
+(See "Common Setup" in the main `README.md`.)
+
 
 # Run
 
