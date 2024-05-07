@@ -1,12 +1,10 @@
 #include "foo.h"
 #include "bar.h"
-
-int g = 987;
+#include "not_inline.h"
 
 int main() {
-  foo_ret a = foo();
-  bar_ret b = bar();
-  int p = a.ret * 10 + b.ret; // 12 * 10 + 34 = 154
-  int q = getFooRet() * 10 + getBarRet(); // 12 * 10 + 34 = 154
-  return p - q + 23; // 23
+  int f = get_foo_ret(); // 12
+  int b = get_bar_ret(); // 34
+  int s = get_value_not_inlined(); // 22
+  return b - f - s; // 0
 }

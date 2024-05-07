@@ -1,6 +1,8 @@
+#pragma once
+
 struct bar_ret {
   int ret;
 };
 
 bar_ret bar();
-int getBarRet();
+int get_bar_ret();

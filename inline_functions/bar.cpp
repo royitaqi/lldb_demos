@@ -1,6 +1,6 @@
 #include "bar.h"
 
-#include "inline_in_source.cpp"
+#include "inline_for_bar.cpp"
 
 bar_ret bar() {
   int i = 3;
@@ -8,6 +8,7 @@ bar_ret bar() {
   return bar_ret { i * 10 + j }; // 34
 }
 
-int getBarRet() {
-  return getRetInSource<>(bar());
+int get_bar_ret() {
+  int a = get_bar_ret_inlined(bar());
+  return a; // 34
 }
