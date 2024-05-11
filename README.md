@@ -42,6 +42,17 @@ LLDB does NOT request dsyms when a breakpoint is set, nor when a breakpoint is t
 * `settings set target.inline-breakpoint-strategy <always|headers|never>` to control whether or not to resolve inline functions for source and header files.
 
 
+## breakpoint_resolution_file_line
+
+Logic to resolve file/line breakpoints:
+* Iterate through all CU
+  * Find matching CUs by looking at *both*:
+    * The settings `target.inline-breakpoint-strategy`
+    * The file list in the line table prologue
+  * If a CU matches, load/look at its line table to find the address
+  * Load/look at its symbol table to find the function that contains the address
+
+
 # Common Setup
 
 Command line aliases
