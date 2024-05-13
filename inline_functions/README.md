@@ -164,9 +164,9 @@ Address            Line   Column File   ISA Discriminator Flags
 ## Set file/line breakpoint and see inline functions get resolved
 ```
 $ lldb a.out
-(lldb) br set --file inline_for_foo.h --line 2
+(lldb) br set --file inline_for_foo.h --line 4
 Breakpoint 1: where = foo.dylib`get_foo_ret_inlined(foo_ret const&) + 8 at inline_for_foo.h:4:12, address = 0x0000000000003f20
-(lldb) br set --file inline_for_bar.cpp --line 2
+(lldb) br set --file inline_for_bar.cpp --line 4
 Breakpoint 2: where = bar.dylib`get_bar_ret_inlined(bar_ret const&) + 8 at inline_for_bar.cpp:4:12, address = 0x0000000000003f20
 ```
 
@@ -174,9 +174,9 @@ Breakpoint 2: where = bar.dylib`get_bar_ret_inlined(bar_ret const&) + 8 at inlin
 ```
 $ lldb a.out
 (lldb) settings set target.inline-breakpoint-strategy headers
-(lldb) br set --file inline_for_foo.h --line 2
+(lldb) br set --file inline_for_foo.h --line 4
 Breakpoint 1: where = foo.dylib`get_foo_ret_inlined(foo_ret const&) + 8 at inline_for_foo.h:4:12, address = 0x0000000000003f20
-(lldb) br set --file inline_for_bar.cpp --line 2
+(lldb) br set --file inline_for_bar.cpp --line 4
 Breakpoint 2: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
 ```
@@ -185,10 +185,10 @@ WARNING:  Unable to resolve breakpoint to any actual locations.
 ```
 $ lldb a.out
 (lldb) settings set target.inline-breakpoint-strategy never
-(lldb) br set --file inline_for_foo.h --line 2
+(lldb) br set --file inline_for_foo.h --line 4
 Breakpoint 1: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
-(lldb) br set --file inline_for_bar.cpp --line 2
+(lldb) br set --file inline_for_bar.cpp --line 4
 Breakpoint 2: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
 ```
