@@ -48,10 +48,23 @@ Logic to resolve file/line breakpoints:
 * Iterate through all CU
   * Find matching CUs by looking at *both*:
     * The settings `target.inline-breakpoint-strategy`
-    * The file list in the line table prologue
-  * If a CU matches, load/look at its line table to find the address
-  * Load/look at its symbol table to find the function that contains the address
+    * The file list in the *line table prologue*
+  * If a CU matches, load/look at its *line table content* to find the address
+  * Load/look at its *symbol table* to find the function that contains the address
 
+
+## settings__preload_symbols
+
+When the setting is off:
+```
++--------+-----------------+--------------------+
+| Module | Add Symbol File | Parse Symbol Table |
++--------+-----------------+--------------------+
+| user   | at attach       | at br set          |
++--------+-----------------+--------------------+
+| shared | at attach       | at attach          |
++--------+-----------------+--------------------+
+```
 
 # Common Setup
 
