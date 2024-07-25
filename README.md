@@ -1,13 +1,6 @@
 # Demos
 A series of demos when learning and working with LLDB.
-
-For the demos which includes a python script to print debug info requets from LLDB, type the following commands to set up the script.
-
-``````
-defaults delete com.apple.DebugSymbols
-defaults write com.apple.DebugSymbols DBGShellCommands <full-path-to-script.py>
-``````
-
+See the `Common Setup` section below.
 
 ## simple
 
@@ -66,9 +59,15 @@ When the setting is off:
 +--------+-----------------+--------------------+
 ```
 
+
+## gdb_remote
+
+Use GDB remote logs to understand the interaction between LLDB server and applications.
+
+
 # Common Setup
 
-Command line aliases
+Command line aliases.
 ```
 cccc='xcrun clang++ -g -O0 -std=gnu++11 -stdlib=libc++'
 dddd=dwarfdump
@@ -78,3 +77,9 @@ hhhh='objdump --section-headers'
 oooo='otool -lv'
 ssss='dsymutil -s'
 ```
+
+For the demos which includes a python script to print debug info requets from LLDB, type the following commands to set up the script.
+``````
+defaults delete com.apple.DebugSymbols
+defaults write com.apple.DebugSymbols DBGShellCommands <full-path-to-script.py>
+``````
