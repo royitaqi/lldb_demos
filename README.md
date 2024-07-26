@@ -65,6 +65,11 @@ When the setting is off:
 Use GDB remote logs to understand the interaction between LLDB server and applications.
 
 
+## realpath
+
+Realpath symlinks when resolving file/line breakpoints.
+
+
 # Common Setup
 
 Command line aliases.
