@@ -1,5 +1,5 @@
-#include "foo.h"
-#include "bar.h"
+#include "symlink/foo.h"
+#include "symlink/bar.h"
 
 int main() {
   int a = foo(); // 12
