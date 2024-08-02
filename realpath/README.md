@@ -61,3 +61,25 @@ Breakpoint 1: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f
 (lldb) b real/foo.h:2
 Breakpoint 2: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
 ```
+
+Similarly, the following commands can be used to test this feature:
+```
+# Cannot resolve breakpoint when no realpathing is done.
+b real/foo.h:2
+b real/bar.cpp:3
+
+# Can resolve when a valid prefix is provided.
+settings set target.source-realpath-prefixes "fake/path" "/Users/royshi/demo/realpath/"
+b real/foo.h:2
+b real/bar.cpp:3
+
+# Wilecard prefix works
+settings set target.source-realpath-prefixes ""
+b real/foo.h:2
+b real/bar.cpp:3
+
+# Clearing the setting will disable realpathing
+settings clear target.source-realpath-prefixes
+b real/foo.h:2
+b real/bar.cpp:3
+```
