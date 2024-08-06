@@ -53,33 +53,51 @@ Breakpoint 4: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
 # Run *with* realpathing
 
 ```
-(lldb) settings set target.source-realpath-prefixes "/Users/royshi/demo/realpath/symlink/"
+lldb a.out
 
-(lldb) b real/bar.cpp:3
-Breakpoint 1: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f5c
-
-(lldb) b real/foo.h:2
-Breakpoint 2: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
-```
-
-Similarly, the following commands can be used to test this feature:
-```
 # Cannot resolve breakpoint when no realpathing is done.
-b real/foo.h:2
-b real/bar.cpp:3
+(lldb) b real/foo.h:2
+Breakpoint 1: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+(lldb) b real/bar.cpp:3
+Breakpoint 2: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
 
 # Can resolve when a valid prefix is provided.
-settings set target.source-realpath-prefixes "fake/path" "/Users/royshi/demo/realpath/"
-b real/foo.h:2
-b real/bar.cpp:3
+(lldb) settings set target.source-realpath-prefixes "fake/path" "/Users/royshi/demo/realpath/"
+(lldb) b real/foo.h:2
+Breakpoint 3: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
+(lldb) b real/bar.cpp:3
+Breakpoint 4: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f5c
 
 # Wilecard prefix works
-settings set target.source-realpath-prefixes ""
-b real/foo.h:2
-b real/bar.cpp:3
+(lldb) settings set target.source-realpath-prefixes ""
+(lldb) b real/foo.h:2
+Breakpoint 5: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
+(lldb) b real/bar.cpp:3
+Breakpoint 6: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f5c
 
 # Clearing the setting will disable realpathing
-settings clear target.source-realpath-prefixes
-b real/foo.h:2
-b real/bar.cpp:3
+(lldb) settings clear target.source-realpath-prefixes
+(lldb) b real/foo.h:2
+Breakpoint 7: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+(lldb) b real/bar.cpp:3
+Breakpoint 8: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+
+# Stats
+(lldb) statistics dump --targets=true --modules=false
+{
+  ...
+  "targets": [
+    {
+      ...
+      "sourceRealpathAttemptCount": 4,
+      "sourceRealpathCompatibleCount": 4,
+      ...
+    }
+  ],
+  ...
+}
 ```
