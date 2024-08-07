@@ -1,7 +1,7 @@
 # Build
 
 ```
-cccc -c symlink/bar.cpp main.cpp
+cccc -c symlink2/bar.cpp main.cpp
 cccc bar.o main.o
 ./a.out
 echo $?
@@ -29,10 +29,10 @@ Line table for /Users/royshi/demo/realpath/main.cpp in `a.out
 0x0000000100003fa0: /Users/royshi/demo/realpath/main.cpp:7:3
 
 (lldb) image dump line-table bar.cpp
-Line table for /Users/royshi/demo/realpath/symlink/bar.cpp in `a.out
-0x0000000100003f58: /Users/royshi/demo/realpath/symlink/bar.cpp:3
-0x0000000100003f5c: /Users/royshi/demo/realpath/symlink/bar.cpp:4:3
-0x0000000100003f60: /Users/royshi/demo/realpath/symlink/bar.cpp:4:3
+Line table for /Users/royshi/demo/realpath/symlink2/bar.cpp in `a.out
+0x0000000100003f40: /Users/royshi/demo/realpath/symlink2/bar.cpp:3
+0x0000000100003f44: /Users/royshi/demo/realpath/symlink2/bar.cpp:4:3
+0x0000000100003f48: /Users/royshi/demo/realpath/symlink2/bar.cpp:4:3
 
 (lldb) b real/bar.cpp:3
 Breakpoint 1: no locations (pending).
@@ -50,7 +50,7 @@ Breakpoint 4: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
 ```
 
 
-# Run *with* realpathing
+# Run *with* realpathing on *symlinked file*
 
 ```
 lldb a.out
@@ -59,31 +59,21 @@ lldb a.out
 (lldb) b real/foo.h:2
 Breakpoint 1: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
-(lldb) b real/bar.cpp:3
-Breakpoint 2: no locations (pending).
-WARNING:  Unable to resolve breakpoint to any actual locations.
 
 # Can resolve when a valid prefix is provided.
-(lldb) settings set target.source-realpath-prefixes "fake/path" "/Users/royshi/demo/realpath/"
+(lldb) settings set target.source-realpath-prefixes "/Users/royshi/demo/realpath/"
 (lldb) b real/foo.h:2
-Breakpoint 3: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
-(lldb) b real/bar.cpp:3
-Breakpoint 4: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f5c
+Breakpoint 2: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f4c
 
 # Wilecard prefix works
 (lldb) settings set target.source-realpath-prefixes ""
 (lldb) b real/foo.h:2
-Breakpoint 5: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f64
-(lldb) b real/bar.cpp:3
-Breakpoint 6: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f5c
+Breakpoint 3: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f4c
 
 # Clearing the setting will disable realpathing
 (lldb) settings clear target.source-realpath-prefixes
 (lldb) b real/foo.h:2
-Breakpoint 7: no locations (pending).
-WARNING:  Unable to resolve breakpoint to any actual locations.
-(lldb) b real/bar.cpp:3
-Breakpoint 8: no locations (pending).
+Breakpoint 4: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
 
 # Stats
@@ -93,11 +83,52 @@ WARNING:  Unable to resolve breakpoint to any actual locations.
   "targets": [
     {
       ...
-      "sourceRealpathAttemptCount": 4,
-      "sourceRealpathCompatibleCount": 4,
+      "sourceRealpathAttemptCount": 2,
+      "sourceRealpathCompatibleCount": 2,
       ...
     }
   ],
   ...
 }
+```
+
+
+# Run *with* realpathing on *symlinked directory*
+
+```
+lldb a.out
+
+# Cannot resolve breakpoint when no realpathing is done.
+(lldb) b real/bar.cpp:3
+Breakpoint 1: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+
+# Can resolve when a valid prefix is provided.
+(lldb) settings set target.source-realpath-prefixes "/Users/royshi/demo/realpath/"
+(lldb) b real/bar.cpp:3
+Breakpoint 2: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f44
+```
+
+
+# Run *with* realpathing *and* source-map
+
+```
+lldb a.out
+
+# Set source-map
+(lldb) settings set target.source-map "to-be-mapped" "real"
+
+# Cannot resolve breakpoint when no realpathing is done.
+(lldb) b real/qux.h:2
+Breakpoint 1: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+
+# Can resolve when a valid prefix is provided.
+(lldb) settings set target.source-realpath-prefixes "/Users/royshi/demo/realpath/"
+(lldb) b real/qux.h:2
+Breakpoint 2: where = a.out`qux() + 4 at qux.h:2:3, address = 0x0000000100003f54
+
+# Can resolve with both realpathing and source-mapping in action
+(lldb) b to-be-mapped/qux.h:2
+Breakpoint 3: where = a.out`qux() + 4 at qux.h:2:3, address = 0x0000000100003f54
 ```
