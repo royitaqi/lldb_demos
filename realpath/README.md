@@ -115,9 +115,6 @@ Breakpoint 2: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f
 ```
 lldb a.out
 
-# Set source-map
-(lldb) settings set target.source-map "to-be-mapped" "real"
-
 # Cannot resolve breakpoint when no realpathing is done.
 (lldb) b real/qux.h:2
 Breakpoint 1: no locations (pending).
@@ -128,7 +125,13 @@ WARNING:  Unable to resolve breakpoint to any actual locations.
 (lldb) b real/qux.h:2
 Breakpoint 2: where = a.out`qux() + 4 at qux.h:2:3, address = 0x0000000100003f54
 
-# Can resolve with both realpathing and source-mapping in action
+# Cannot resolve for a to-be-mapped path without source-map
 (lldb) b to-be-mapped/qux.h:2
-Breakpoint 3: where = a.out`qux() + 4 at qux.h:2:3, address = 0x0000000100003f54
+Breakpoint 3: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+
+# Can resolve with both realpathing and source-mapping in action
+(lldb) settings set target.source-map "real" "to-be-mapped"
+(lldb) b to-be-mapped/qux.h:2
+Breakpoint 4: where = a.out`qux() + 4 at qux.h:2:3, address = 0x0000000100003f54
 ```
