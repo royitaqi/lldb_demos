@@ -11,3 +11,4 @@ a.out.*
 *.dylib
 .vscode/
 t
+.DS_Store
