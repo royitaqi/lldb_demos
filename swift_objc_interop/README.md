@@ -11,10 +11,14 @@ Set a breakpoint in `main.swift` at the line `print("Hello, World!")`, hit the b
 # Print a non-`direct` property
 (lldb) po response.caption
 
+# Print a non-`direct` property (which is an array)
+(lldb) p response.comments
+(lldb) po response.comments
+
 # Print the inner property of a non-`direct` property
 (lldb) po response.comments.first?.user
 
-# Print a `direct` property
+# Print a `direct` property (which is an array)
 (lldb) po response.quickResponseEmojis
 
 # Print the inner `direct` property of a `direct` property
