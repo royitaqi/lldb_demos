@@ -70,6 +70,11 @@ Use GDB remote logs to understand the interaction between LLDB server and applic
 Realpath symlinks when resolving file/line breakpoints.
 
 
+## swift_objc_interop
+
+Demonstrates LLDB's behavior when accessing properties in Objective-C code from Swift code.
+
+
 # Common Setup
 
 Command line aliases.
