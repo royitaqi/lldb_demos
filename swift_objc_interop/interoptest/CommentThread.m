@@ -16,7 +16,7 @@
       ];
       _threadsCommentCount = 123;
   }
-  return self;
+  return self; // breakpoint here to stop in Objective-C
 }
 
 @end
