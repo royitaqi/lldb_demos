@@ -1,0 +1,1 @@
+../somedirect/MyObj.h

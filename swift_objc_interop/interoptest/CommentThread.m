@@ -1,5 +1,7 @@
 #import "CommentThread.h"
 
+#import "MyObj.h"
+
 @implementation CommentThread
 
 - (instancetype)init
@@ -16,6 +18,10 @@
       ];
       _threadsCommentCount = 123;
   }
+
+  MyObj *x = [[MyObj alloc] init];
+  NSLog(@"%p", x);
+
   return self; // breakpoint here to stop in Objective-C
 }
 
