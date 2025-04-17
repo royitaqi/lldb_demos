@@ -1,5 +1,1 @@
-struct foo_ret {
-  int ret;
-};
-
-foo_ret foo();
+int foo(); // returns 12

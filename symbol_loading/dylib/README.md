@@ -11,9 +11,9 @@ alias oooo='otool -lv'
 
 Run
 ```
-cccc -dynamiclib foo.cpp -o foo.dylib
 cccc -dynamiclib bar.cpp -o bar.dylib
-cccc main.cpp foo.dylib bar.dylib
+cccc -dynamiclib foo.cpp bar.dylib -o foo.dylib
+cccc main.cpp foo.dylib
 ```
 
 ## Debug a.out with "target.preload-symbols = true". Observe that all symbols are loaded.

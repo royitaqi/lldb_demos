@@ -1,5 +1,1 @@
-struct bar_ret {
-  int ret;
-};
-
-bar_ret bar();
+int bar(); // returns 2
