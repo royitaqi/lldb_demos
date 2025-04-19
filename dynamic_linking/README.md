@@ -3,11 +3,12 @@
 ```
 alias cccc='xcrun clang++ -g -O0 -std=gnu++11 -stdlib=libc++'
 alias oooo='otool -lv'
+alias ssss='dsymutil --symtab'
 ```
 
 # Tutorial
 
-## Build
+## Build with dynamic linking
 
 Run
 ```
@@ -16,84 +17,29 @@ cccc -dynamiclib foo.cpp bar.dylib -o foo.dylib
 cccc main.cpp foo.dylib
 ```
 
-## Debug a.out with "target.preload-symbols = true". Observe that all symbols are loaded.
 
-Run
-```
-lldb
-(lldb) settings set target.preload-symbols true
-(lldb) target create a.out
-(lldb) statistics dump
-```
-
-Here is a part of the output:
-```
-  "modules": [
-    {
-      "path": "/Users/<username>/demo/symbol_loading/a.out",
-      "symbolsLoaded": 7,
-      ...,
-    },
-    {
-      "path": "foo.dylib",
-      "symbolsLoaded": 3,
-    },
-    {
-      "path": "bar.dylib",
-      "symbolsLoaded": 3,
-    },
-  ],
-```
+## Verify that the libraries are actually __dynamically__ linked
 
 
-## Debug a.out with "target.preload-symbols = false". Observe that all symbols are loaded.
-
-Run
-```
-lldb
-(lldb) settings set target.preload-symbols false
-(lldb) target create a.out
-(lldb) statistics dump
-```
-
-Here is a part of the output:
-```
-  "modules": [
-    {
-      "path": "/Users/<username>/demo/symbol_loading/a.out",
-      "symbolsLoaded": 7,
-      ...,
-    },
-    {
-      "path": "foo.dylib",
-      "symbolsLoaded": 3,
-    },
-    {
-      "path": "bar.dylib",
-      "symbolsLoaded": 3,
-    },
-  ],
-```
-
-
-## But why are the symbols in `foo.dylib` and `bar.dylib` loaded even before the program is started?
-
-
-## First, let's verify that the libraries are actually __dynamically__ linked into the program.
-
-We have three approaches:
+We have multiple approaches:
 
 **Approach 1:**
 ```
 > oooo a.out
-Load command 14
+Load command 13
           cmd LC_LOAD_DYLIB
       cmdsize 40
          name foo.dylib (offset 24)
    time stamp 2 Wed Dec 31 16:00:02 1969
       current version 0.0.0
 compatibility version 0.0.0
-Load command 15
+```
+Observe that `a.out` has Mach-O load commands which load `foo.dylib`.
+
+
+```
+> oooo foo.dylib
+Load command 11
           cmd LC_LOAD_DYLIB
       cmdsize 40
          name bar.dylib (offset 24)
@@ -102,25 +48,44 @@ Load command 15
 compatibility version 0.0.0
 ```
 
-So `a.out` has Mach-O load commands which loaded the two dylibs.
-
+`foo.dylib` has load commands which load `bar.dylib`.
 
 
 **Approach 2: [0]**
+
+`otool -L` Display the names and version numbers of the shared libraries that the object file uses, as well as the shared library ID if the file is a shared library.
+
 ```
 > otool -L a.out
 a.out:
 	foo.dylib (compatibility version 0.0.0, current version 0.0.0)
-	bar.dylib (compatibility version 0.0.0, current version 0.0.0)
-	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 1800.105.0)
+	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 1900.178.0)
 	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)
 ```
-
-The fact that these dylibs are printed means that they are dynamically linked.
+The fact that `foo.dylib` is printed means that they are dynamically linked.
 If they were statically linked, they would have not been printed.
 
 
+```
+> otool -L foo.dylib
+foo.dylib:
+	foo.dylib (compatibility version 0.0.0, current version 0.0.0)
+	bar.dylib (compatibility version 0.0.0, current version 0.0.0)
+	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 1900.178.0)
+	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1351.0.0)
+```
+It's interesting that `foo.dylib` includes itself in the list. Same for `bar.dylib`.
+
+
 **Approach 3: [0]**
+
+From `man dyld`:
+> DYLD_PRINT_LIBRARIES
+> When this is set, the dynamic linker writes to file descriptor 2
+  (normally standard error) the filenames of the libraries the program is
+  using. This is useful to make sure that the use of DYLD_LIBRARY_PATH is
+  getting what you want.
+
 ```
 > DYLD_PRINT_LIBRARIES=1 ./a.out
 dyld[4662]: <FDD004EF-2302-4785-A37A-F5FD8838440B> /Users/<username>/demo/symbol_loading/dylib/a.out
@@ -157,7 +122,7 @@ Index    n_strx   n_type             n_sect n_desc n_value
 
 Note that `__Z3barv` and `__Z3foov` are undefined ("UNDF"), indicating that they are not defined in the current module (a.out) but are defined in other modules (the dylibs).
 
-BTW, "mh" in `__mh_execute_header` stands for "mach header".
+BTW, `__mh_execute_header` is commonly known as the "mach header".
 
 
 
