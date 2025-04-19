@@ -129,4 +129,5 @@ BTW, `__mh_execute_header` is commonly known as the "mach header".
 # References
 
 [0] https://michaelspangler.io/posts/statically-linking-on-macos.html
+
 [1] https://manybutfinite.com/post/anatomy-of-a-program-in-memory/
