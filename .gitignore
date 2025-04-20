@@ -4,12 +4,7 @@ tmp/
 *.log
 log.*
 *.o
-a.out
-a.out.*
-*.a.out
-*.a.out.*
-example1
-example2
+*.out
 *.dylib
 .vscode/
 t
