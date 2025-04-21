@@ -15,7 +15,7 @@ NOTE: The LLDB should have [PR #136226](https://github.com/llvm/llvm-project/pul
 These patches print the number of loaded symbols and prevent symbol loading during such printing.
 
 
-# Tutorial
+# Tutorial: main.cpp
 
 ## Build two binaries: with dSYM and .o as symbol file, respectively
 
@@ -185,3 +185,44 @@ LoadScriptingResourceForModule
 Module::LoadScriptingResourceInTarget
 Platform::LocateExecutableScriptingResources --- This immediately returns an empty FileSpecList.
 ```
+
+
+# Tutorial: example2.cpp
+
+## Build
+
+```
+cccc -dynamiclib bar.cpp -o bar.dylib
+cccc -dynamiclib foo.cpp bar.dylib -o foo.dylib
+cccc example2.cpp foo.dylib -o example2
+```
+
+
+## Observe the number of symbols loaded for each module
+
+```
+> lldb
+(lldb) target create example2
+(lldb) statistics dump
+{
+  "modules": [
+    {
+      "path": "/Users/royshi/demo/symbol_loading/symbols_at_target_create/example2",
+      "symbolFilePath": "/Users/royshi/demo/symbol_loading/symbols_at_target_create/example2.dSYM/Contents/Resources/DWARF/example2",
+      "symbolsLoaded": 0
+    },
+    {
+      "path": "foo.dylib",
+      "symbolFilePath": "/System/Volumes/Data/Users/royshi/demo/symbol_loading/symbols_at_target_create/foo.dylib.dSYM/Contents/Resources/DWARF/foo.dylib",
+      "symbolsLoaded": 0,
+    },
+    {
+      "path": "bar.dylib",
+      "symbolFilePath": "/System/Volumes/Data/Users/royshi/demo/symbol_loading/symbols_at_target_create/bar.dylib.dSYM/Contents/Resources/DWARF/bar.dylib",
+      "symbolsLoaded": 0,
+    }
+  ]
+}
+```
+
+Same as our understanding in "Tutorial: main.cpp", the symbol tables in all the modules have not be loaded yet.
