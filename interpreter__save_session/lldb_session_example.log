@@ -156,14 +156,13 @@
 (lldb) settings set interpreter.save-session-on-quit true
 (lldb) settings set interpreter.save-session-directory .
 (lldb) target create a.out
-Current executable set to '/Users/royshi/demo/settings_interpreter_save_session/a.out' (arm64).
+Current executable set to '/Users/<username>/demo/settings_interpreter_save_session/a.out' (arm64).
 (lldb) b main
 (lldb) breakpoint set --name 'main'
 Breakpoint 1: where = a.out`main + 16 at main.cpp:10:11, address = 0x0000000100003f70
 Breakpoint 1: where = a.out`main + 16 at main.cpp:10:11, address = 0x0000000100003f70
 (lldb) r
-Process 12256 launched: '/Users/royshi/demo/settings_interpreter_save_session/a.out' (arm64)
+Process 12256 launched: '/Users/<username>/demo/settings_interpreter_save_session/a.out' (arm64)
 (lldb) n
 (lldb) po a
 12
-

@@ -129,7 +129,7 @@ Example:
               DW_AT_LLVM_sysroot	("/Applications/Xcode_15.3.0_15E204a_fb.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
               DW_AT_APPLE_sdk	("MacOSX.sdk")
               DW_AT_stmt_list	(0x00000067)
-              DW_AT_comp_dir	("/Users/royshi/demo/inline_functions")
+              DW_AT_comp_dir	("/Users/<username>/demo/inline_functions")
               DW_AT_low_pc	(0x0000000100003f80)
               DW_AT_high_pc	(0x0000000100003f88)
 
@@ -140,7 +140,7 @@ Example:
                 DW_AT_frame_base	(DW_OP_reg31 WSP)
                 DW_AT_linkage_name	("_Z21get_value_not_inlinedv")
                 DW_AT_name	("get_value_not_inlined")
-                DW_AT_decl_file	("/Users/royshi/demo/inline_functions/not_inline.cpp")
+                DW_AT_decl_file	("/Users/<username>/demo/inline_functions/not_inline.cpp")
                 DW_AT_decl_line	(3)
                 DW_AT_type	(0x00000000000000cd "int")
                 DW_AT_external	(true)

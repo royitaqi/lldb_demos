@@ -104,7 +104,7 @@ Symbol table for: 'a.out' (arm64)
 Index    n_strx   n_type             n_sect n_desc n_value
 ======== -------- ------------------ ------ ------ ----------------
 [     0] 00000001 64 (N_SO         ) 01     0000   0000000000000000
-[     1] 00000031 64 (N_SO         ) 00     0000   0000000000000000 '/Users/royshi/demo/symbol_loading/dylib/'
+[     1] 00000031 64 (N_SO         ) 00     0000   0000000000000000 '/Users/<username>/demo/symbol_loading/dylib/'
 [     2] 0000005a 64 (N_SO         ) 00     0000   0000000000000000 'main.cpp'
 [     3] 00000063 66 (N_OSO        ) 00     0001   00000000680136c9 '/private/var/folders/tt/k30mc06n1blgsvbp_tgfbsnh0000gn/T/main-3f3d7a.o'
 [     4] 00000001 2e (N_BNSYM      ) 01     0000   0000000100003f50

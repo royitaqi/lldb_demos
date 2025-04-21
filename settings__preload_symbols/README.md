@@ -29,7 +29,7 @@ Create target:
 (lldb) target create a.out
                             Module::GetObjectFile() : Getting object file for a.out
                             Module::GetSymbolFile() : Getting symbol file for a.out
-        SymbolVendor::AddSymbolFileRepresentation() : Adding symbol file /Users/royshi/demo/settings__preload_symbols/a.out.dSYM/Contents/Resources/DWARF/a.out
+        SymbolVendor::AddSymbolFileRepresentation() : Adding symbol file /Users/<username>/demo/settings__preload_symbols/a.out.dSYM/Contents/Resources/DWARF/a.out
                             Module::GetObjectFile() : Getting object file for dyld
                             Module::GetObjectFile() : Getting object file for libc++.1.dylib
                             Module::GetObjectFile() : Getting object file for libSystem.B.dylib
@@ -251,7 +251,7 @@ Create target:
         SymbolVendor::AddSymbolFileRepresentation() : Adding symbol file /usr/lib/liboah.dylib
  Parsing symbol table for liboah.dylib
  Parsing 1296 bytes of dyld trie data
-Current executable set to '/Users/royshi/demo/settings__preload_symbols/a.out' (arm64).
+Current executable set to '/Users/<username>/demo/settings__preload_symbols/a.out' (arm64).
 ```
 
 

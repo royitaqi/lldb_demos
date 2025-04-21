@@ -14,25 +14,25 @@ echo $?
 lldb a.out
 
 (lldb) image dump line-table main.cpp
-Line table for /Users/royshi/demo/realpath/main.cpp in `a.out
-0x0000000100003f60: /Users/royshi/demo/realpath/symlink/foo.h:1
-0x0000000100003f64: /Users/royshi/demo/realpath/symlink/foo.h:2:3
-0x0000000100003f68: /Users/royshi/demo/realpath/main.cpp:4
-0x0000000100003f78: /Users/royshi/demo/realpath/main.cpp:5:11
-0x0000000100003f7c: /Users/royshi/demo/realpath/main.cpp:5:7
-0x0000000100003f80: /Users/royshi/demo/realpath/main.cpp:6:11
-0x0000000100003f84: /Users/royshi/demo/realpath/main.cpp:6:7
-0x0000000100003f88: /Users/royshi/demo/realpath/main.cpp:7:10
-0x0000000100003f8c: /Users/royshi/demo/realpath/main.cpp:7:14
-0x0000000100003f90: /Users/royshi/demo/realpath/main.cpp:7:12
-0x0000000100003f94: /Users/royshi/demo/realpath/main.cpp:7:3
-0x0000000100003fa0: /Users/royshi/demo/realpath/main.cpp:7:3
+Line table for /Users/<username>/demo/realpath/main.cpp in `a.out
+0x0000000100003f60: /Users/<username>/demo/realpath/symlink/foo.h:1
+0x0000000100003f64: /Users/<username>/demo/realpath/symlink/foo.h:2:3
+0x0000000100003f68: /Users/<username>/demo/realpath/main.cpp:4
+0x0000000100003f78: /Users/<username>/demo/realpath/main.cpp:5:11
+0x0000000100003f7c: /Users/<username>/demo/realpath/main.cpp:5:7
+0x0000000100003f80: /Users/<username>/demo/realpath/main.cpp:6:11
+0x0000000100003f84: /Users/<username>/demo/realpath/main.cpp:6:7
+0x0000000100003f88: /Users/<username>/demo/realpath/main.cpp:7:10
+0x0000000100003f8c: /Users/<username>/demo/realpath/main.cpp:7:14
+0x0000000100003f90: /Users/<username>/demo/realpath/main.cpp:7:12
+0x0000000100003f94: /Users/<username>/demo/realpath/main.cpp:7:3
+0x0000000100003fa0: /Users/<username>/demo/realpath/main.cpp:7:3
 
 (lldb) image dump line-table bar.cpp
-Line table for /Users/royshi/demo/realpath/symlink2/bar.cpp in `a.out
-0x0000000100003f40: /Users/royshi/demo/realpath/symlink2/bar.cpp:3
-0x0000000100003f44: /Users/royshi/demo/realpath/symlink2/bar.cpp:4:3
-0x0000000100003f48: /Users/royshi/demo/realpath/symlink2/bar.cpp:4:3
+Line table for /Users/<username>/demo/realpath/symlink2/bar.cpp in `a.out
+0x0000000100003f40: /Users/<username>/demo/realpath/symlink2/bar.cpp:3
+0x0000000100003f44: /Users/<username>/demo/realpath/symlink2/bar.cpp:4:3
+0x0000000100003f48: /Users/<username>/demo/realpath/symlink2/bar.cpp:4:3
 
 (lldb) b real/bar.cpp:3
 Breakpoint 1: no locations (pending).
@@ -61,7 +61,7 @@ Breakpoint 1: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
 
 # Can resolve when a valid prefix is provided.
-(lldb) settings set target.source-realpath-prefixes "/Users/royshi/demo/realpath/"
+(lldb) settings set target.source-realpath-prefixes "/Users/<username>/demo/realpath/"
 (lldb) b real/foo.h:2
 Breakpoint 2: where = a.out`foo() + 4 at foo.h:2:3, address = 0x0000000100003f4c
 
@@ -104,7 +104,7 @@ Breakpoint 1: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
 
 # Can resolve when a valid prefix is provided.
-(lldb) settings set target.source-realpath-prefixes "/Users/royshi/demo/realpath/"
+(lldb) settings set target.source-realpath-prefixes "/Users/<username>/demo/realpath/"
 (lldb) b real/bar.cpp:3
 Breakpoint 2: where = a.out`bar() + 4 at bar.cpp:4:3, address = 0x0000000100003f44
 ```
@@ -121,7 +121,7 @@ Breakpoint 1: no locations (pending).
 WARNING:  Unable to resolve breakpoint to any actual locations.
 
 # Can resolve when a valid prefix is provided.
-(lldb) settings set target.source-realpath-prefixes "/Users/royshi/demo/realpath/"
+(lldb) settings set target.source-realpath-prefixes "/Users/<username>/demo/realpath/"
 (lldb) b real/qux.h:2
 Breakpoint 2: where = a.out`qux() + 4 at qux.h:2:3, address = 0x0000000100003f54
 

@@ -22,7 +22,7 @@ Symbol table for: 'example1' (arm64)
 Index    n_strx   n_type             n_sect n_desc n_value
 ======== -------- ------------------ ------ ------ ----------------
 [     0] 00000001 64 (N_SO         ) 01     0000   0000000000000000
-[     1] 0000002e 64 (N_SO         ) 00     0000   0000000000000000 '/Users/royshi/demo/symbol_loading/symbols_in_binary/'
+[     1] 0000002e 64 (N_SO         ) 00     0000   0000000000000000 '/Users/<username>/demo/symbol_loading/symbols_in_binary/'
 [     2] 00000063 64 (N_SO         ) 00     0000   0000000000000000 'example1.cpp'
 [     3] 00000070 66 (N_OSO        ) 00     0001   000000006803eec1 '/private/var/folders/m8/fkx9dg8n7k517w7rq2blxhkw0000gn/T/example1-8ab731.o'
 [     4] 00000001 2e (N_BNSYM      ) 01     0000   0000000100003f04
@@ -105,7 +105,7 @@ Symbol table for: 'example2' (arm64)
 Index    n_strx   n_type             n_sect n_desc n_value
 ======== -------- ------------------ ------ ------ ----------------
 [     0] 00000001 64 (N_SO         ) 01     0000   0000000000000000
-[     1] 00000025 64 (N_SO         ) 00     0000   0000000000000000 '/Users/royshi/demo/symbol_loading/symbols_in_binary/'
+[     1] 00000025 64 (N_SO         ) 00     0000   0000000000000000 '/Users/<username>/demo/symbol_loading/symbols_in_binary/'
 [     2] 0000005a 64 (N_SO         ) 00     0000   0000000000000000 'example2.cpp'
 [     3] 00000067 66 (N_OSO        ) 00     0001   000000006803f0c8 '/private/var/folders/m8/fkx9dg8n7k517w7rq2blxhkw0000gn/T/example2-b7236c.o'
 [     4] 00000001 2e (N_BNSYM      ) 01     0000   0000000100003f70
@@ -135,7 +135,7 @@ Symbol table for: 'foo.dylib' (arm64)
 Index    n_strx   n_type             n_sect n_desc n_value
 ======== -------- ------------------ ------ ------ ----------------
 [     0] 00000001 64 (N_SO         ) 01     0000   0000000000000000
-[     1] 00000014 64 (N_SO         ) 00     0000   0000000000000000 '/Users/royshi/demo/symbol_loading/symbols_in_binary/'
+[     1] 00000014 64 (N_SO         ) 00     0000   0000000000000000 '/Users/<username>/demo/symbol_loading/symbols_in_binary/'
 [     2] 00000049 64 (N_SO         ) 00     0000   0000000000000000 'foo.cpp'
 [     3] 00000051 66 (N_OSO        ) 00     0001   000000006803f0c8 '/private/var/folders/m8/fkx9dg8n7k517w7rq2blxhkw0000gn/T/foo-19abad.o'
 [     4] 00000001 2e (N_BNSYM      ) 01     0000   0000000000003f74
@@ -162,7 +162,7 @@ Symbol table for: 'bar.dylib' (arm64)
 Index    n_strx   n_type             n_sect n_desc n_value
 ======== -------- ------------------ ------ ------ ----------------
 [     0] 00000001 64 (N_SO         ) 01     0000   0000000000000000
-[     1] 0000000b 64 (N_SO         ) 00     0000   0000000000000000 '/Users/royshi/demo/symbol_loading/symbols_in_binary/'
+[     1] 0000000b 64 (N_SO         ) 00     0000   0000000000000000 '/Users/<username>/demo/symbol_loading/symbols_in_binary/'
 [     2] 00000040 64 (N_SO         ) 00     0000   0000000000000000 'bar.cpp'
 [     3] 00000048 66 (N_OSO        ) 00     0001   000000006803f0c8 '/private/var/folders/m8/fkx9dg8n7k517w7rq2blxhkw0000gn/T/bar-755d67.o'
 [     4] 00000001 2e (N_BNSYM      ) 01     0000   0000000000003fa0

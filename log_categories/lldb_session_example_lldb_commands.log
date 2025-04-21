@@ -153,13 +153,13 @@
 (lldb) command script add -o -c fblldb.folly_fibers.PluginHook enable-fibers
 (lldb) log enable lldb commands
 (lldb) target create a.out
-Current executable set to '/Users/royshi/demo/log_categories/a.out' (arm64).
+Current executable set to '/Users/<username>/demo/log_categories/a.out' (arm64).
 (lldb) b main
 (lldb) breakpoint set --name 'main'
 Breakpoint 1: where = a.out`main + 16 at main.cpp:6:15, address = 0x0000000100003f7c
 Breakpoint 1: where = a.out`main + 16 at main.cpp:6:15, address = 0x0000000100003f7c
 (lldb) r
-Process 42907 launched: '/Users/royshi/demo/log_categories/a.out' (arm64)
+Process 42907 launched: '/Users/<username>/demo/log_categories/a.out' (arm64)
 (lldb) n
 (lldb) p a
 (foo_ret)  (ret = 12)
