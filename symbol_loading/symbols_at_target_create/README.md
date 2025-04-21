@@ -39,8 +39,8 @@ With dSYM, LLDB doesn't load any symbols for the main executable.
   ...
   "modules": [
     {
-      "path": "/Users/royshi/demo/symbol_loading/symbols_at_target_create/main_dSYM.out",
-      "symbolFilePath": "/Users/royshi/demo/symbol_loading/symbols_at_target_create/main_dSYM.out.dSYM/Contents/Resources/DWARF/main_dSYM.out",
+      "path": "/Users/<username>/demo/symbol_loading/symbols_at_target_create/main_dSYM.out",
+      "symbolFilePath": "/Users/<username>/demo/symbol_loading/symbols_at_target_create/main_dSYM.out.dSYM/Contents/Resources/DWARF/main_dSYM.out",
       "symbolsLoaded": 0,
     },
     ...
@@ -59,7 +59,7 @@ As a comparison, with .o, LLDB will load symbols.
   ...
   "modules": [
     {
-      "path": "/Users/royshi/demo/symbol_loading/symbols_at_target_create/main_o.out",
+      "path": "/Users/<username>/demo/symbol_loading/symbols_at_target_create/main_o.out",
       "symbolFileModuleIdentifiers": [
         4366287000
       ],
@@ -207,18 +207,18 @@ cccc example2.cpp foo.dylib -o example2
 {
   "modules": [
     {
-      "path": "/Users/royshi/demo/symbol_loading/symbols_at_target_create/example2",
-      "symbolFilePath": "/Users/royshi/demo/symbol_loading/symbols_at_target_create/example2.dSYM/Contents/Resources/DWARF/example2",
+      "path": "/Users/<username>/demo/symbol_loading/symbols_at_target_create/example2",
+      "symbolFilePath": "/Users/<username>/demo/symbol_loading/symbols_at_target_create/example2.dSYM/Contents/Resources/DWARF/example2",
       "symbolsLoaded": 0
     },
     {
       "path": "foo.dylib",
-      "symbolFilePath": "/System/Volumes/Data/Users/royshi/demo/symbol_loading/symbols_at_target_create/foo.dylib.dSYM/Contents/Resources/DWARF/foo.dylib",
+      "symbolFilePath": "/System/Volumes/Data/Users/<username>/demo/symbol_loading/symbols_at_target_create/foo.dylib.dSYM/Contents/Resources/DWARF/foo.dylib",
       "symbolsLoaded": 0,
     },
     {
       "path": "bar.dylib",
-      "symbolFilePath": "/System/Volumes/Data/Users/royshi/demo/symbol_loading/symbols_at_target_create/bar.dylib.dSYM/Contents/Resources/DWARF/bar.dylib",
+      "symbolFilePath": "/System/Volumes/Data/Users/<username>/demo/symbol_loading/symbols_at_target_create/bar.dylib.dSYM/Contents/Resources/DWARF/bar.dylib",
       "symbolsLoaded": 0,
     }
   ]
