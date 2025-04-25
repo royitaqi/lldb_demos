@@ -8,7 +8,18 @@ int foo() {
   return i * 10 + j; // 12
 }
 
-int main() {
+int main(int argc, char** argv) {
+  bool wait = false;
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-' && argv[i][1] == 'w' && argv[i][2] == 0) {
+      wait = true;
+    }
+  }
+
+  while (wait) {
+    // do nothing
+  }
+
   int a = foo();
   int b = 3;
   const char* s = "hello world!";
