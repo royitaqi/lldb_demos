@@ -136,17 +136,17 @@ def process_as_supported_command_or_request(input_text: str) -> Union[str, bool]
     elif command == "setBreakpoints":
         path = parts[1]
         filename = path.split("/")[-1]
-        line = int(parts[2])
+        lines = parts[2:]
         return process_as_dap_message_content(
             '{"command":"setBreakpoints","arguments":{"source":{"name":"'
             + filename
             + '","path":"'
             + path
             + '"},"lines":['
-            + str(line)
-            + '],"breakpoints":[{"line":'
-            + str(line)
-            + '}],"sourceModified":false},"type":"request","seq":3}'
+            + ','.join(lines)
+            + '],"breakpoints":['
+            + ','.join(['{"line":' + line + '}' for line in lines])
+            + '],"sourceModified":false},"type":"request","seq":3}'
         )
     elif command == "configurationDone":
         return process_as_dap_message_content(
