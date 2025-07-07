@@ -6,6 +6,8 @@ log.*
 *.o
 *.out
 *.dylib
+*.dwo
+*.dwp
 .vscode/
 t
 .DS_Store
