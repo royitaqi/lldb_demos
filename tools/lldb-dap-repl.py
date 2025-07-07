@@ -223,6 +223,7 @@ def repl(lldb_dap: subprocess.Popen) -> None:
     while True:
         try:
             input_text = input().strip()
+            print("^" * len(input_text))
         except (EOFError, KeyboardInterrupt):
             print("Exiting")
             break
