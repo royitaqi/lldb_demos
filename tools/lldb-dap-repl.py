@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import threading
+from datetime import datetime
 from typing import Union
 
 
@@ -44,7 +45,12 @@ HELP_MSG = """You can input:
         disconnect                          Send a "disconnect" request
   4. A file (path), which contains one or more inputs, one per line.
   5. Everything else will be interpreted as an LLDB command and be sent to
-     lldb-dap as an "evaluate" request with the latest frame ID."""
+     lldb-dap as an "evaluate" request with the latest frame ID.
+
+In all input, the following macros are supported:
+        {DATE}      The current date in the format YYYY-MM-DD
+        {TIME}      The current time in the format HH:MM
+"""
 
 
 last_frame_id = None
@@ -109,6 +115,13 @@ def process_as_dap_message_content(input_text: str) -> Union[list[str], None]:
         json.loads(input_text)
     except json.JSONDecodeError:
         return None
+
+    # Replace predefined macros
+    input_text = input_text.replace(
+        "{DATE}", datetime.now().strftime("%Y-%m-%d")
+    ).replace(
+        "{TIME}", datetime.now().strftime("%H:%M")
+    )
 
     # Prepare the DAP message
     content_length = len(input_text)
