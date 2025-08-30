@@ -39,12 +39,16 @@ HELP_MSG = """You can input:
         stackTrace THREAD_ID                Send a "stackTrace" request
         scopes FRAME_ID                     Send a "scopes" request
         variables                           Send a "variables" request
-        evaluate FRAME_ID EXPRESSION        Send a "evaluate" request
+        evaluate FRAME_ID|None LLDB_CMD     Send a "evaluate" request
+        continue [THREAD_ID]                Send a "continue" request
         disconnect                          Send a "disconnect" request
-  4. Everything else will be interpreted as an LLDB command and be sent to
-     lldb-dap as an "evaluate" request with the last used frame ID."""
+  4. A file (path), which contains one or more inputs, one per line.
+  5. Everything else will be interpreted as an LLDB command and be sent to
+     lldb-dap as an "evaluate" request with the latest frame ID."""
+
 
 last_frame_id = None
+last_thread_id = None
 
 
 def print_with_separator(msg: str, separator: str) -> None:
@@ -81,6 +85,14 @@ def print_response(stdout) -> None:
             # Print the DAP message
             dap_message = f"Content-Length: {content_length}\r\n\r\n{content}"
             print_with_separator(dap_message, "<--")
+
+            # Update global state
+            json_content = json.loads(content)
+            if json_content["type"] == "event":
+                if json_content["event"] == "stopped":
+                    global last_thread_id
+                    last_thread_id = int(json_content["body"]["threadId"])
+
     except Exception:
         print("Stopping printing responses")
     finally:
@@ -91,29 +103,30 @@ def print_response(stdout) -> None:
 # - String. The input is processed and converted to a DAP message.
 # - True. The input is processed and yielded no DAP message.
 # - False. The input is not processed. Next processor will be called.
-def process_as_dap_message_content(input_text: str) -> Union[str, bool]:
+def process_as_dap_message_content(input_text: str) -> Union[list[str], None]:
     # Validate the content
     try:
         json.loads(input_text)
     except json.JSONDecodeError:
-        return False
+        return None
 
     # Prepare the DAP message
     content_length = len(input_text)
     dap_message = f"Content-Length: {content_length}\r\n\r\n{input_text}"
 
-    return dap_message
+    return [dap_message]
 
 
-def process_as_supported_command_or_request(input_text: str) -> Union[str, bool]:
+def process_as_supported_command_or_request(input_text: str) -> Union[list[str], None]:
     global last_frame_id
+    global last_thread_id
 
     parts = input_text.split(" ")
     command = parts[0]
 
     if command == "help":
         print_with_separator(HELP_MSG, "---")
-        return True
+        return []
     elif command == "initialize":
         return process_as_dap_message_content(
             '{"command":"initialize","arguments":{"clientID":"vscode","clientName":"Visual Studio Code @ Meta","adapterID":"fb-lldb","pathFormat":"path","linesStartAt1":true,"columnsStartAt1":true,"supportsVariableType":true,"supportsVariablePaging":true,"supportsRunInTerminalRequest":true,"locale":"en","supportsProgressReporting":true,"supportsInvalidatedEvent":true,"supportsMemoryReferences":true,"supportsArgsCanBeInterpretedByShell":true,"supportsMemoryEvent":true,"supportsStartDebuggingRequest":true,"supportsANSIStyling":true},"type":"request","seq":1}'
@@ -175,28 +188,66 @@ def process_as_supported_command_or_request(input_text: str) -> Union[str, bool]
             '{"command":"variables","arguments":{"variablesReference":1,"format":{"hex":false}},"type":"request","seq":56}'
         )
     elif command == "evaluate":
-        last_frame_id = frame_id = int(parts[1])
+        if parts[1] == "None":
+            frame_id = None
+        else:
+            last_frame_id = frame_id = int(parts[1])
         expression = " ".join(parts[2:])
         return process_as_dap_message_content(
             '{"command":"evaluate","arguments":{"expression":"'
             + expression
-            + '","frameId":'
-            + str(frame_id)
-            + ',"context":"repl"},"type":"request","seq":59}'
+            + '",'
+            + ('"frameId":' + str(frame_id) if frame_id is not None else "")
+            + '"context":"repl"},"type":"request","seq":59}'
+        )
+    elif command == "continue":
+        thread_id = int(parts[1]) if len(parts) > 1 else last_thread_id
+        return process_as_dap_message_content(
+            '{"command":"continue","arguments":{"threadId":'
+            + str(thread_id)
+            + '},"type":"request","seq":21}'
         )
     elif command == "disconnect":
         return process_as_dap_message_content(
             '{"command":"disconnect","arguments":{"restart":false,"terminateDebuggee":true},"type":"request","seq":40}'
         )
     else:
-        return False
+        return None
 
 
-def process_as_lldb_command(input_text: str) -> Union[str, bool]:
-    global last_frame_id
+def process_as_file(input_text: str) -> Union[list[str], None]:
+    if not os.path.exists(input_text):
+        return None
+    output = []
+    with open(input_text) as f:
+        lines = f.readlines()
+    for line in lines:
+        process_result = process(line.strip())
+        if process_result is None:
+            return None
+        output += process_result
+    return output
+
+
+def process_as_lldb_command(input_text: str) -> Union[list[str], None]:
     return process_as_supported_command_or_request(
         f"evaluate {last_frame_id} {input_text}"
     )
+
+
+processors = [
+    process_as_dap_message_content,
+    process_as_supported_command_or_request,
+    process_as_file,
+    process_as_lldb_command,
+]
+
+def process(input_text: str) -> Union[list[str], None]:
+    for processor in processors:
+        process_result = processor(input_text)
+        if process_result is not None:
+            return process_result
+    return None
 
 
 def repl(lldb_dap: subprocess.Popen) -> None:
@@ -213,12 +264,6 @@ def repl(lldb_dap: subprocess.Popen) -> None:
     )
     stdout_thread.start()
 
-    processors = [
-        process_as_dap_message_content,
-        process_as_supported_command_or_request,
-        process_as_lldb_command,
-    ]
-
     # REPL
     while True:
         try:
@@ -229,20 +274,16 @@ def repl(lldb_dap: subprocess.Popen) -> None:
             break
 
         # Go through processors one by one, until the input can be processed
-        process_result = False
-        for processor in processors:
-            process_result = processor(input_text)
-            if process_result is not False:
-                break
+        process_result = process(input_text)
 
-        if process_result is False:
+        if process_result is None:
             # Input cannot be processed
             print("Invalid input")
             continue
 
-        # Send the DAP message to lldb-dap
-        if type(process_result) is str:
-            dap_message = process_result
+        # Send the DAP messages to lldb-dap
+        for dap_message in process_result:
+            assert type(dap_message) is str, f"Invalid process result: type={type(dap_message)} value={dap_message}"
             print_with_separator(dap_message, "-->")
             lldb_dap.stdin.write(dap_message)
             lldb_dap.stdin.flush()
