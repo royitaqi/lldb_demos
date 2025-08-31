@@ -31,6 +31,8 @@ HELP_MSG = """You can input:
   1. A JSON object, which will be sent to lldb-dap as a DAP message.
   2. A supported command:
         help                                Print this message
+        autoTerminate                       Terminate lldb-dap process after
+                                            the "terminated" event is received
   3. A supported DAP request:
         initialize                          Send a "initialize" request
         launch TARGET BUILD_DIR [CWD]       Send a "launch" request
@@ -56,6 +58,7 @@ In all input, the following macros are supported:
 
 last_frame_id = None
 last_thread_id = None
+auto_terminate = False
 
 
 def print_with_separator(msg: str, separator: str) -> None:
@@ -65,7 +68,7 @@ def print_with_separator(msg: str, separator: str) -> None:
     print("")
 
 
-def print_response(stdout) -> None:
+def print_response(lldb_dap: subprocess.Popen, stdout) -> None:
     try:
         while not stdout.closed:
             # First line should be "Content-Length: LENGTH"
@@ -99,7 +102,10 @@ def print_response(stdout) -> None:
                 if json_content["event"] == "stopped":
                     global last_thread_id
                     last_thread_id = int(json_content["body"]["threadId"])
-
+                elif json_content["event"] == "terminated":
+                    global auto_terminate
+                    if auto_terminate:
+                        terminate_lldb_dap(lldb_dap)
     except Exception:
         print("Stopping printing responses")
     finally:
@@ -144,6 +150,12 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
 
     if command == "help":
         print_with_separator(HELP_MSG, "---")
+        return []
+    elif command == "autoTerminate":
+        global auto_terminate
+        auto_terminate = not auto_terminate
+        print("autoTerminate is", "on" if auto_terminate else "off")
+        print("")
         return []
     elif command == "initialize":
         return process_as_dap_message_content(
@@ -275,6 +287,7 @@ def process_as_file(input_text: str) -> Union[list[str], None]:
 
 
 def process_as_lldb_command(input_text: str) -> Union[list[str], None]:
+    global last_frame_id
     return process_as_supported_command_or_request(
         f"evaluate {last_frame_id} {input_text}"
     )
@@ -305,7 +318,7 @@ def repl(lldb_dap: subprocess.Popen) -> None:
     # 5. The stdout_thread terminates
     # Note: Since it's a daemon thread, it can be terminated before steps 4 and 5 occur, which is fine.
     stdout_thread = threading.Thread(
-        target=print_response, args=[lldb_dap.stdout], daemon=True
+        target=print_response, args=[lldb_dap, lldb_dap.stdout], daemon=True
     )
     stdout_thread.start()
 
@@ -315,7 +328,6 @@ def repl(lldb_dap: subprocess.Popen) -> None:
             input_text = input().strip()
             print("^" * len(input_text))
         except (EOFError):
-            print("Terminating lldb-dap")
             terminate_lldb_dap(lldb_dap)
             break
         except (KeyboardInterrupt):
@@ -345,6 +357,7 @@ def terminate_lldb_dap(lldb_dap: subprocess.Popen) -> None:
             return
 
         # Terminate lldb-dap
+        print("Terminating lldb-dap")
         lldb_dap.stdin.close()
         return_code = lldb_dap.wait()
         print("lldb-dap terminated with return code", return_code)
