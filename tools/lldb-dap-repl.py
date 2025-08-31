@@ -282,7 +282,11 @@ def repl(lldb_dap: subprocess.Popen) -> None:
         try:
             input_text = input().strip()
             print("^" * len(input_text))
-        except (EOFError, KeyboardInterrupt):
+        except (EOFError):
+            print("Terminating lldb-dap")
+            terminate_lldb_dap(lldb_dap)
+            break
+        except (KeyboardInterrupt):
             print("Exiting")
             break
 
@@ -303,13 +307,17 @@ def repl(lldb_dap: subprocess.Popen) -> None:
 
 
 def terminate_lldb_dap(lldb_dap: subprocess.Popen) -> None:
-    # Try to close lldb-dap gracefully
     try:
+        # If lldb-dap has already terminated, we don't have to do anything
+        if lldb_dap.poll() is not None:
+            return
+
+        # Terminate lldb-dap
         lldb_dap.stdin.close()
-        lldb_dap.wait()
+        return_code = lldb_dap.wait()
+        print("lldb-dap terminated with return code", return_code)
     except KeyboardInterrupt:
-        # Closing the above stdin will sometimes cause KeyboardInterrupt
-        pass
+        print("Wasn't able to confirm lldb-dap termination")
 
 
 def start_lldb_dap_and_repl() -> None:
@@ -326,6 +334,8 @@ def start_lldb_dap_and_repl() -> None:
     ) as lldb_dap:
         try:
             repl(lldb_dap)
+        except (KeyboardInterrupt):
+            pass
         finally:
             terminate_lldb_dap(lldb_dap)
 
