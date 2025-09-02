@@ -34,7 +34,7 @@ HELP_MSG = """You can input:
   3. A supported DAP request:
         initialize                          Send a "initialize" request
         launch TARGET BUILD_DIR [CWD]       Send a "launch" request
-        attach PID                          Send a "attach" request
+        attach PID|PROGRAM                  Send a "attach" request
         setBreakpoints FILE LINE            Send a "setBreakpoints" request
         configurationDone                   Send a "configurationDone" request
         threads                             Send a "threads" request
@@ -110,12 +110,15 @@ def print_response(stdout) -> None:
 # - String. The input is processed and converted to a DAP message.
 # - True. The input is processed and yielded no DAP message.
 # - False. The input is not processed. Next processor will be called.
-def process_as_dap_message_content(input_text: str) -> Union[list[str], None]:
+def process_as_dap_message_content(input_text: str, should_succeed: bool = False) -> Union[list[str], None]:
     # Validate the content
     try:
         json.loads(input_text)
-    except json.JSONDecodeError:
-        return None
+    except json.JSONDecodeError as e:
+        if should_succeed:
+            raise ValueError("Invalid JOSN: " + input_text, e)
+        else:
+            return None
 
     # Replace predefined macros
     input_text = input_text.replace(
@@ -137,13 +140,15 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
 
     parts = input_text.split(" ")
     command = parts[0]
+    print("Processing command: [" + command + "]")
 
     if command == "help":
         print_with_separator(HELP_MSG, "---")
         return []
     elif command == "initialize":
         return process_as_dap_message_content(
-            '{"command":"initialize","arguments":{"clientID":"vscode","clientName":"Visual Studio Code @ Meta","adapterID":"fb-lldb","pathFormat":"path","linesStartAt1":true,"columnsStartAt1":true,"supportsVariableType":true,"supportsVariablePaging":true,"supportsRunInTerminalRequest":true,"locale":"en","supportsProgressReporting":true,"supportsInvalidatedEvent":true,"supportsMemoryReferences":true,"supportsArgsCanBeInterpretedByShell":true,"supportsMemoryEvent":true,"supportsStartDebuggingRequest":true,"supportsANSIStyling":true},"type":"request","seq":1}'
+            '{"command":"initialize","arguments":{"clientID":"vscode","clientName":"Visual Studio Code @ Meta","adapterID":"fb-lldb","pathFormat":"path","linesStartAt1":true,"columnsStartAt1":true,"supportsVariableType":true,"supportsVariablePaging":true,"supportsRunInTerminalRequest":true,"locale":"en","supportsProgressReporting":true,"supportsInvalidatedEvent":true,"supportsMemoryReferences":true,"supportsArgsCanBeInterpretedByShell":true,"supportsMemoryEvent":true,"supportsStartDebuggingRequest":true,"supportsANSIStyling":true},"type":"request","seq":1}',
+            True,
         )
     elif command == "launch":
         target = parts[1]
@@ -158,17 +163,24 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
             + target
             + '","request":"launch","sourceMap":[[".","'
             + build_dir
-            + '"]],"timeout":600,"type":"fb-lldb","stopOnEntry":false,"runInTerminal":false,"disableASLR":true,"disableSTDIO":false,"detachOnError":false,"terminateCommands":[],"preferLLDBCommandsInDebugConsole":true,"repeatLastLLDBCommandInDebugConsole":true,"reuseLLDBDap":false,"customThreadFormat":"${thread.name} [tid: ${thread.id%tid}]","__sessionId":"lldb_dap_repl_yyyymmdd_hhmmss_royshi"},"type":"request","seq":2}'
+            + '"]],"timeout":600,"type":"fb-lldb","stopOnEntry":false,"runInTerminal":false,"disableASLR":true,"disableSTDIO":false,"detachOnError":false,"terminateCommands":[],"preferLLDBCommandsInDebugConsole":true,"repeatLastLLDBCommandInDebugConsole":true,"reuseLLDBDap":false,"customThreadFormat":"${thread.name} [tid: ${thread.id%tid}]","__sessionId":"lldb_dap_repl_yyyymmdd_hhmmss_royshi"},"type":"request","seq":2}',
+            True,
         )
     elif command == "attach":
+        print("ROYDEBUG")
         # Example of attach request:
         # - DAP messages: P1928554145
         # - Attach request: P1928555816
-        pid = int(parts[1])
+        pid = program = None
+        try:
+            pid = int(parts[1])
+        except ValueError:
+            program = parts[1]
         return process_as_dap_message_content(
-            '{"command":"attach","arguments":{"name":"lldb-dap REPL","request":"attach","pid":'
-            + str(pid)
-            + ',"initCommands":["script import importlib","script import importlib.util","script importlib.import_module(\'fblldbinit\') if importlib.util.find_spec(\'fblldbinit\') else None","settings set symbols.load-on-demand true"],"preferLLDBCommandsInDebugConsole":true,"terminateCommands":[],"postRunCommands":[],"customThreadFormat":"Thread ${thread.index} [tid: ${thread.id%tid}]{ name=${thread.name}}{ queue=${thread.queue}}"},"type":"request","seq":2}'
+            '{"command":"attach","arguments":{"name":"lldb-dap REPL","request":"attach",'
+            + ('"pid":' + str(pid) if program is None else '"program":"' + program + '"')
+            + ',"initCommands":["script import importlib","script import importlib.util","script importlib.import_module(\'fblldbinit\') if importlib.util.find_spec(\'fblldbinit\') else None","settings set symbols.load-on-demand true"]},"type":"request","seq":2}',
+            True,
         )
     elif command == "setBreakpoints":
         path = parts[1]
@@ -183,33 +195,39 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
             + ','.join(lines)
             + '],"breakpoints":['
             + ','.join(['{"line":' + line + '}' for line in lines])
-            + '],"sourceModified":false},"type":"request","seq":3}'
+            + '],"sourceModified":false},"type":"request","seq":3}',
+            True,
         )
     elif command == "configurationDone":
         return process_as_dap_message_content(
-            '{"command":"configurationDone","type":"request","seq":29}'
+            '{"command":"configurationDone","type":"request","seq":29}',
+            True,
         )
     elif command == "threads":
         return process_as_dap_message_content(
-            '{"command":"threads","type":"request","seq":51}'
+            '{"command":"threads","type":"request","seq":51}',
+            True,
         )
     elif command == "stackTrace":
         thread_id = int(parts[1])
         return process_as_dap_message_content(
             '{"command":"stackTrace","arguments":{"threadId":'
             + str(thread_id)
-            + ',"startFrame":0,"levels":1},"type":"request","seq":52}'
+            + ',"startFrame":0,"levels":1},"type":"request","seq":52}',
+            True,
         )
     elif command == "scopes":
         last_frame_id = frame_id = int(parts[1])
         return process_as_dap_message_content(
             '{"command":"scopes","arguments":{"frameId":'
             + str(frame_id)
-            + '},"type":"request","seq":55}'
+            + '},"type":"request","seq":55}',
+            True,
         )
     elif command == "variables":
         return process_as_dap_message_content(
-            '{"command":"variables","arguments":{"variablesReference":1,"format":{"hex":false}},"type":"request","seq":56}'
+            '{"command":"variables","arguments":{"variablesReference":1,"format":{"hex":false}},"type":"request","seq":56}',
+            True,
         )
     elif command == "evaluate":
         if parts[1] == "None":
@@ -222,18 +240,21 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
             + expression
             + '",'
             + ('"frameId":' + str(frame_id) if frame_id is not None else "")
-            + '"context":"repl"},"type":"request","seq":59}'
+            + '"context":"repl"},"type":"request","seq":59}',
+            True,
         )
     elif command == "continue":
         thread_id = int(parts[1]) if len(parts) > 1 else last_thread_id
         return process_as_dap_message_content(
             '{"command":"continue","arguments":{"threadId":'
             + str(thread_id)
-            + '},"type":"request","seq":21}'
+            + '},"type":"request","seq":21}',
+            True,
         )
     elif command == "disconnect":
         return process_as_dap_message_content(
-            '{"command":"disconnect","arguments":{"restart":false,"terminateDebuggee":true},"type":"request","seq":40}'
+            '{"command":"disconnect","arguments":{"restart":false,"terminateDebuggee":true},"type":"request","seq":40}',
+            True,
         )
     else:
         return None
