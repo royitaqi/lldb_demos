@@ -34,6 +34,7 @@ HELP_MSG = """You can input:
   3. A supported DAP request:
         initialize                          Send a "initialize" request
         launch TARGET BUILD_DIR [CWD]       Send a "launch" request
+        attach PID                          Send a "attach" request
         setBreakpoints FILE LINE            Send a "setBreakpoints" request
         configurationDone                   Send a "configurationDone" request
         threads                             Send a "threads" request
@@ -158,6 +159,16 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
             + '","request":"launch","sourceMap":[[".","'
             + build_dir
             + '"]],"timeout":600,"type":"fb-lldb","stopOnEntry":false,"runInTerminal":false,"disableASLR":true,"disableSTDIO":false,"detachOnError":false,"terminateCommands":[],"preferLLDBCommandsInDebugConsole":true,"repeatLastLLDBCommandInDebugConsole":true,"reuseLLDBDap":false,"customThreadFormat":"${thread.name} [tid: ${thread.id%tid}]","__sessionId":"lldb_dap_repl_yyyymmdd_hhmmss_royshi"},"type":"request","seq":2}'
+        )
+    elif command == "attach":
+        # Example of attach request:
+        # - DAP messages: P1928554145
+        # - Attach request: P1928555816
+        pid = int(parts[1])
+        return process_as_dap_message_content(
+            '{"command":"attach","arguments":{"name":"lldb-dap REPL","request":"attach","pid":'
+            + str(pid)
+            + ',"initCommands":["script import importlib","script import importlib.util","script importlib.import_module(\'fblldbinit\') if importlib.util.find_spec(\'fblldbinit\') else None","settings set symbols.load-on-demand true"],"preferLLDBCommandsInDebugConsole":true,"terminateCommands":[],"postRunCommands":[],"customThreadFormat":"Thread ${thread.index} [tid: ${thread.id%tid}]{ name=${thread.name}}{ queue=${thread.queue}}"},"type":"request","seq":2}'
         )
     elif command == "setBreakpoints":
         path = parts[1]
