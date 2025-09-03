@@ -6,7 +6,7 @@ import subprocess
 import sys
 import threading
 from datetime import datetime
-from typing import Union
+from typing import cast, Callable, Union
 
 
 WELCOME_MSG = """
@@ -33,6 +33,7 @@ HELP_MSG = """You can input:
         help                                Print this message
         autoTerminate                       Terminate lldb-dap process after
                                             the "terminated" event is received
+        EOF                                 Close the stdin of lldb-dap process
   3. A supported DAP request:
         initialize                          Send a "initialize" request
         launch TARGET BUILD_DIR [CWD]       Send a "launch" request
@@ -59,6 +60,7 @@ In all input, the following macros are supported:
 last_frame_id = None
 last_thread_id = None
 auto_terminate = False
+lldb_dap = None
 
 
 def print_with_separator(msg: str, separator: str) -> None:
@@ -68,7 +70,25 @@ def print_with_separator(msg: str, separator: str) -> None:
     print("")
 
 
-def print_response(lldb_dap: subprocess.Popen, stdout) -> None:
+def print_dap_status() -> None:
+    global lldb_dap
+    assert lldb_dap is not None, "lldb_dap is not initialized"
+
+    while True:
+        try:
+            status = lldb_dap.poll()
+            if status is not None:
+                print("lldb-dap has terminated with exit code", status)
+                break
+        except Exception:
+            pass
+
+
+def print_response() -> None:
+    global lldb_dap
+    assert lldb_dap is not None, "lldb_dap is not initialized"
+
+    stdout = lldb_dap.stdout
     try:
         while not stdout.closed:
             # First line should be "Content-Length: LENGTH"
@@ -112,11 +132,15 @@ def print_response(lldb_dap: subprocess.Popen, stdout) -> None:
         stdout.close()
 
 
+type actionableFunc = Callable[[], None]
+type actionableDapMessage = str
+type actionable = Union[actionableDapMessage, actionableFunc]
+
 # The return of a processor is either:
 # - String. The input is processed and converted to a DAP message.
 # - True. The input is processed and yielded no DAP message.
 # - False. The input is not processed. Next processor will be called.
-def process_as_dap_message_content(input_text: str, should_succeed: bool = False) -> Union[list[str], None]:
+def process_as_dap_message_content(input_text: str, should_succeed: bool = False) -> Union[list[actionable], None]:
     # Validate the content
     try:
         json.loads(input_text)
@@ -140,7 +164,7 @@ def process_as_dap_message_content(input_text: str, should_succeed: bool = False
     return [dap_message]
 
 
-def process_as_supported_command_or_request(input_text: str) -> Union[list[str], None]:
+def process_as_supported_command_or_request(input_text: str) -> Union[list[actionable], None]:
     global last_frame_id
     global last_thread_id
 
@@ -149,14 +173,18 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
     print("Processing command: [" + command + "]")
 
     if command == "help":
-        print_with_separator(HELP_MSG, "---")
-        return []
+        def print_help():
+            print_with_separator(HELP_MSG, "---")
+        return [print_help]
     elif command == "autoTerminate":
-        global auto_terminate
-        auto_terminate = not auto_terminate
-        print("autoTerminate is", "on" if auto_terminate else "off")
-        print("")
-        return []
+        def flip_auto_terminate():
+            global auto_terminate
+            auto_terminate = not auto_terminate
+            print("autoTerminate is", "on" if auto_terminate else "off")
+            print("")
+        return [flip_auto_terminate]
+    elif command == "EOF":
+        return [close_lldb_dap_stdin]
     elif command == "initialize":
         return process_as_dap_message_content(
             '{"command":"initialize","arguments":{"clientID":"vscode","clientName":"Visual Studio Code @ Meta","adapterID":"fb-lldb","pathFormat":"path","linesStartAt1":true,"columnsStartAt1":true,"supportsVariableType":true,"supportsVariablePaging":true,"supportsRunInTerminalRequest":true,"locale":"en","supportsProgressReporting":true,"supportsInvalidatedEvent":true,"supportsMemoryReferences":true,"supportsArgsCanBeInterpretedByShell":true,"supportsMemoryEvent":true,"supportsStartDebuggingRequest":true,"supportsANSIStyling":true},"type":"request","seq":1}',
@@ -272,7 +300,7 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[str],
         return None
 
 
-def process_as_file(input_text: str) -> Union[list[str], None]:
+def process_as_file(input_text: str) -> Union[list[actionable], None]:
     if not os.path.exists(input_text):
         return None
     output = []
@@ -286,7 +314,7 @@ def process_as_file(input_text: str) -> Union[list[str], None]:
     return output
 
 
-def process_as_lldb_command(input_text: str) -> Union[list[str], None]:
+def process_as_lldb_command(input_text: str) -> Union[list[actionable], None]:
     global last_frame_id
     return process_as_supported_command_or_request(
         f"evaluate {last_frame_id} {input_text}"
@@ -300,7 +328,7 @@ processors = [
     process_as_lldb_command,
 ]
 
-def process(input_text: str) -> Union[list[str], None]:
+def process(input_text: str) -> Union[list[actionable], None]:
     for processor in processors:
         process_result = processor(input_text)
         if process_result is not None:
@@ -308,7 +336,10 @@ def process(input_text: str) -> Union[list[str], None]:
     return None
 
 
-def repl(lldb_dap: subprocess.Popen) -> None:
+def repl() -> None:
+    global lldb_dap
+    assert lldb_dap is not None, "lldb_dap is not initialized"
+
     # Setup a daemon thread to process the response from lldb-dap.
     # The termination sequence is:
     # 1. The user enters EOF (Ctrl+D)
@@ -318,9 +349,14 @@ def repl(lldb_dap: subprocess.Popen) -> None:
     # 5. The stdout_thread terminates
     # Note: Since it's a daemon thread, it can be terminated before steps 4 and 5 occur, which is fine.
     stdout_thread = threading.Thread(
-        target=print_response, args=[lldb_dap, lldb_dap.stdout], daemon=True
+        target=print_response, args=[], daemon=True
     )
     stdout_thread.start()
+
+    status_thread = threading.Thread(
+        target=print_dap_status, args=[], daemon=True
+    )
+    status_thread.start()
 
     # REPL
     while True:
@@ -328,7 +364,7 @@ def repl(lldb_dap: subprocess.Popen) -> None:
             input_text = input().strip()
             print("^" * len(input_text))
         except (EOFError):
-            terminate_lldb_dap(lldb_dap)
+            terminate_lldb_dap()
             break
         except (KeyboardInterrupt):
             print("Exiting")
@@ -343,14 +379,26 @@ def repl(lldb_dap: subprocess.Popen) -> None:
             continue
 
         # Send the DAP messages to lldb-dap
-        for dap_message in process_result:
-            assert type(dap_message) is str, f"Invalid process result: type={type(dap_message)} value={dap_message}"
-            print_with_separator(dap_message, "-->")
-            lldb_dap.stdin.write(dap_message)
-            lldb_dap.stdin.flush()
+        for actionableItem in process_result:
+            if type(actionableItem) == str:
+                dap_message = cast(actionableDapMessage, actionableItem)
+                print_with_separator(dap_message, "-->")
+                lldb_dap.stdin.write(dap_message)
+                lldb_dap.stdin.flush()
+            else:
+                func = cast(actionableFunc, actionableItem)
+                func()
 
 
-def terminate_lldb_dap(lldb_dap: subprocess.Popen) -> None:
+def close_lldb_dap_stdin() -> None:
+    print("Closing lldb-dap's stdin")
+    lldb_dap.stdin.close()
+
+
+def terminate_lldb_dap() -> None:
+    global lldb_dap
+    assert lldb_dap is not None, "lldb_dap is not initialized"
+
     try:
         # If lldb-dap has already terminated, we don't have to do anything
         if lldb_dap.poll() is not None:
@@ -358,9 +406,8 @@ def terminate_lldb_dap(lldb_dap: subprocess.Popen) -> None:
 
         # Terminate lldb-dap
         print("Terminating lldb-dap")
-        lldb_dap.stdin.close()
-        return_code = lldb_dap.wait()
-        print("lldb-dap terminated with return code", return_code)
+        close_lldb_dap_stdin()
+        lldb_dap.wait()
     except KeyboardInterrupt:
         print("Wasn't able to confirm lldb-dap termination")
 
@@ -376,13 +423,16 @@ def start_lldb_dap_and_repl() -> None:
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         text=True,
-    ) as lldb_dap:
+    ) as p:
+        global lldb_dap
+        lldb_dap = p
+
         try:
-            repl(lldb_dap)
+            repl()
         except (KeyboardInterrupt):
             pass
         finally:
-            terminate_lldb_dap(lldb_dap)
+            terminate_lldb_dap()
 
 
 def main() -> None:
