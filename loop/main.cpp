@@ -1,13 +1,14 @@
+#include <iostream>
+
 int main() {
-    int a = 10;
-    bool f = true;
+    int a = 0;
+    int b = 0;
     for (;;) {
-        if (f) {
-            a += 2;
-        } else {
-            a -= 2;
+	for (int i = 0; i < 100000000; i++) {
+            b++;
         }
-        f = !f;
+	std::cout << a++ << "            \r";
+        std::cout.flush();
     }
     return 0;
 }
