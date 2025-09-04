@@ -15,16 +15,21 @@ from typing import cast, Callable, Union
 WELCOME_MSG = """
 ==============================================================================
 Welcome to the LLDB-DAP REPL.
-This REPL allows you to start a custom lldb-dap and send DAP messages to it.
+This REPL allows you to interactive with a lldb-dap process and send DAP
+messages to it.
 
-To start a custom lldb-dap, run the following command in terminal:
-  > ENV_VAR1=VAL1 ./lldb_dap_repl.py /path/to/lldb-dap --arg1 val1
+To start a custom lldb-dap process:
+  > ENV_VAR1=VAL1 ./lldb_dap_repl.py run /path/to/lldb-dap --arg1 val1
 E.g.
-  > ./lldb_dap_repl.py /opt/llvm/bin/lldb-dap --keep-alive 999
+  > ./lldb_dap_repl.py run /opt/llvm/bin/lldb-dap --keep-alive 999
+
+To connect to an existing lldb-dap process:
+  > ./lldb_dap_repl.py connect /path/to/lldb-dap port
+E.g.
+  > ./lldb_dap_repl.py connect /opt/llvm/bin/lldb-dap 65337
 
 You can then send DAP messages to the lldb-dap process.
 Type "help" to see all valid input.
-See D72906362 for an example input sequence and corresponding DAP messages.
 
 Press Ctrl+D to terminate the REPL and lldb-dap.
 ==============================================================================
@@ -446,15 +451,30 @@ def start_lldb_dap_and_repl() -> None:
         pid = lldb_dap.pid
         lldb_dap = psutil.Process(pid)
     elif mode == "connect":
-        cmdline = sys.argv[2]
-        for proc in psutil.process_iter(['cmdline']):
+        target = sys.argv[2]
+        candidates = []
+        for proc in psutil.process_iter(['cmdline', 'exe']):
             proc_cmdline = proc.info['cmdline']
-            if proc_cmdline is not None and len(proc_cmdline) > 1 and proc.info['cmdline'][0] == cmdline:
-                lldb_dap = proc
+            proc_exe = proc.info['exe']
+            if proc_cmdline is not None and len(proc_cmdline) > 1 and proc.info['cmdline'][0] == target:
+                candidates.append(proc)
                 break
-        assert lldb_dap is not None, "Could not find lldb-dap process"
-        log(f"lldb-dap process found: ({lldb_dap.pid}) {lldb_dap.cmdline()}")
+            if proc_exe == target:
+                candidates.append(proc)
+                break
+        if len(candidates) == 0:
+            log("Could not find lldb-dap process")
+            return
+        elif len(candidates) > 1:
+            log("Found multiple lldb-dap processes:")
+            for idx, proc in iter(candidates):
+                log(f"{idx} - ({lldb_dap.pid}) {lldb_dap.cmdline()}")
+            idx = input(f"Which one do you want to connect to [0-{len(candidates) - 1}]?")
+            lldb_dap = candidates[int(idx)]
+        else:
+            lldb_dap = candidates[0]
 
+        log(f"Connecting to lldb-dap process: ({lldb_dap.pid}) {lldb_dap.cmdline()}")
         port = int(sys.argv[3])
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(("localhost", port))
