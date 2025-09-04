@@ -446,6 +446,8 @@ def start_lldb_dap_and_repl() -> None:
         )
         lldb_dap_stdin = lldb_dap.stdin
         lldb_dap_stdout = lldb_dap.stdout
+        pid = lldb_dap.pid
+        lldb_dap = psutil.Process(pid)
     elif mode == "connect":
         cmdline = sys.argv[2]
         for proc in psutil.process_iter(['cmdline']):
