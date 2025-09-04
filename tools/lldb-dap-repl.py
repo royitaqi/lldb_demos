@@ -86,9 +86,6 @@ def print_dap_status() -> None:
     global lldb_dap
     assert lldb_dap is not None, "lldb_dap is not initialized"
 
-    while lldb_dap.is_running():
-        sleep(1)
-
     exit_code = lldb_dap.wait()
     log("lldb-dap has terminated with exit code", exit_code)
 
