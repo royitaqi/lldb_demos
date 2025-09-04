@@ -183,7 +183,7 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[actio
 
     parts = input_text.split(" ")
     command = parts[0]
-    log("Processing command: [" + command + "]")
+    # log("Processing command: [" + command + "]")
 
     if command == "help":
         def print_help():
@@ -375,7 +375,7 @@ def repl() -> None:
     while True:
         try:
             input_text = input().strip()
-            log("^" * len(input_text))
+            print("^" * len(input_text))
         except (EOFError):
             terminate_lldb_dap()
             break
