@@ -467,7 +467,7 @@ def start_lldb_dap_and_repl() -> None:
             return
         elif len(candidates) > 1:
             log("Found multiple lldb-dap processes:")
-            for idx, proc in iter(candidates):
+            for idx, proc in enumerate(candidates):
                 log(f"{idx} - ({lldb_dap.pid}) {lldb_dap.cmdline()}")
             idx = input(f"Which one do you want to connect to [0-{len(candidates) - 1}]?")
             lldb_dap = candidates[int(idx)]
