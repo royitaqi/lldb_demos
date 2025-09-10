@@ -2,7 +2,6 @@
 
 import json
 import os
-import psutil
 import socket
 import subprocess
 import sys
@@ -74,6 +73,21 @@ last_thread_id = None
 auto_terminate = False
 
 
+def try_get_psutil():
+    try:
+        import psutil
+        return psutil
+    except:
+        return None
+
+
+def try_get_int(s: str) -> int:
+    try:
+        return int(s)
+    except ValueError:
+        return None
+
+
 # Override log() so that it will print a timestamp first.
 def log(*args, **kwargs):
     ts = datetime.now().strftime("%H:%M:%S")
@@ -89,16 +103,17 @@ def print_with_separator(msg: str, separator: str) -> None:
 
 def print_dap_status() -> None:
     global lldb_dap
-    assert lldb_dap is not None, "lldb_dap is not initialized"
+    if lldb_dap is None:
+        log("lldb-dap is not initialized. Won't monitor its status.")
+        return
 
     exit_code = lldb_dap.wait()
     log("lldb-dap has terminated with exit code", exit_code)
 
 
 def print_response() -> None:
-    global lldb_dap
     global lldb_dap_stdout
-    assert lldb_dap is not None, "lldb_dap is not initialized"
+    assert lldb_dap_stdout is not None, "lldb_dap_stdout is not initialized"
 
     stdout = lldb_dap_stdout
     try:
@@ -137,7 +152,7 @@ def print_response() -> None:
                 elif json_content["event"] == "terminated":
                     global auto_terminate
                     if auto_terminate:
-                        terminate_lldb_dap(lldb_dap)
+                        terminate_lldb_dap()
     except Exception:
         pass
     finally:
@@ -349,9 +364,8 @@ def process(input_text: str) -> Union[list[actionable], None]:
 
 
 def repl() -> None:
-    global lldb_dap
     global lldb_dap_stdin
-    assert lldb_dap is not None, "lldb_dap is not initialized"
+    assert lldb_dap_stdin is not None, "lldb_dap_stdin is not initialized"
 
     # Setup a daemon thread to process the response from lldb-dap.
     # The termination sequence is:
@@ -404,9 +418,8 @@ def repl() -> None:
 
 
 def close_lldb_dap_input_stream() -> None:
-    global lldb_dap
     global lldb_dap_stdin
-    assert lldb_dap is not None, "lldb_dap is not initialized"
+    assert lldb_dap_stdin is not None, "lldb_dap_stdin is not initialized"
 
     log("Closing lldb-dap's input stream")
     lldb_dap_stdin.close()
@@ -414,7 +427,9 @@ def close_lldb_dap_input_stream() -> None:
 
 def terminate_lldb_dap() -> None:
     global lldb_dap
-    assert lldb_dap is not None, "lldb_dap is not initialized"
+    if lldb_dap is None:
+        log("lldb-dap is not initialized. Won't terminate it.")
+        return
 
     try:
         if lldb_dap.is_running():
@@ -449,33 +464,39 @@ def start_lldb_dap_and_repl() -> None:
         lldb_dap_stdin = lldb_dap.stdin
         lldb_dap_stdout = lldb_dap.stdout
         pid = lldb_dap.pid
-        lldb_dap = psutil.Process(pid)
+        lldb_dap = try_get_psutil().Process(pid)
     elif mode == "connect":
+        # Find the lldb-dap process
         target = sys.argv[2]
-        candidates = []
-        for proc in psutil.process_iter(['cmdline', 'exe']):
-            proc_cmdline = proc.info['cmdline']
-            proc_exe = proc.info['exe']
-            if proc_cmdline is not None and len(proc_cmdline) > 1 and proc.info['cmdline'][0] == target:
-                candidates.append(proc)
-                break
-            if proc_exe == target:
-                candidates.append(proc)
-                break
-        if len(candidates) == 0:
-            log("Could not find lldb-dap process")
-            return
-        elif len(candidates) > 1:
-            log("Found multiple lldb-dap processes:")
-            for idx, proc in enumerate(candidates):
-                log(f"{idx} - ({lldb_dap.pid}) {lldb_dap.cmdline()}")
-            idx = input(f"Which one do you want to connect to [0-{len(candidates) - 1}]?")
-            lldb_dap = candidates[int(idx)]
+        if try_get_psutil() is None:
+            log("psutil is not installed. Cannot find the lldb-dap process.")
         else:
-            lldb_dap = candidates[0]
+            candidates = []
+            for proc in psutil.process_iter(['cmdline', 'exe']):
+                proc_cmdline = proc.info['cmdline']
+                proc_exe = proc.info['exe']
+                if proc_cmdline is not None and len(proc_cmdline) > 1 and proc.info['cmdline'][0] == target:
+                    candidates.append(proc)
+                    break
+                if proc_exe == target:
+                    candidates.append(proc)
+                    break
+            if len(candidates) == 0:
+                log("Could not find lldb-dap process")
+                return
+            elif len(candidates) > 1:
+                log("Found multiple lldb-dap processes:")
+                for idx, proc in enumerate(candidates):
+                    log(f"{idx} - ({lldb_dap.pid}) {lldb_dap.cmdline()}")
+                idx = input(f"Which one do you want to connect to [0-{len(candidates) - 1}]?")
+                lldb_dap = candidates[int(idx)]
+            else:
+                lldb_dap = candidates[0]
+            log(f"Found lldb-dap process: ({lldb_dap.pid}) {lldb_dap.cmdline()}")
 
-        log(f"Connecting to lldb-dap process: ({lldb_dap.pid}) {lldb_dap.cmdline()}")
+        # Connect to the port
         port = int(sys.argv[3])
+        log(f"Connecting to lldb-dap server: port {port}")
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(("localhost", port))
 
