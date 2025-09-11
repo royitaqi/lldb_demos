@@ -306,7 +306,7 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[actio
             '{"command":"evaluate","arguments":{"expression":"'
             + expression
             + '",'
-            + ('"frameId":' + str(frame_id) if frame_id is not None else "")
+            + ('"frameId":' + str(frame_id) + ',' if frame_id is not None else "")
             + '"context":"repl"},"type":"request","seq":59}',
             True,
         )
