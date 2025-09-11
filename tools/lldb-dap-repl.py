@@ -320,7 +320,7 @@ def process_as_supported_command_or_request(input_text: str) -> Union[list[actio
         )
     elif command == "disconnect":
         return process_as_dap_message_content(
-            '{"command":"disconnect","arguments":{"restart":false,"terminateDebuggee":true},"type":"request","seq":40}',
+            '{"command":"disconnect","arguments":{"restart":false,"terminateDebuggee":false},"type":"request","seq":40}',
             True,
         )
     else:
