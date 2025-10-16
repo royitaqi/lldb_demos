@@ -503,6 +503,7 @@ def start_lldb_dap_and_repl() -> None:
         stream = s.makefile('rw')
         lldb_dap_stdin = stream
         lldb_dap_stdout = stream
+        log(f"Connected to lldb-dap process on port {port}")
 
     try:
         repl()
