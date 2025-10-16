@@ -79,7 +79,7 @@ Demonstrates LLDB's behavior when accessing properties in Objective-C code from 
 
 Command line aliases.
 ```
-cccc='xcrun clang++ -g -O0 -std=gnu++11 -stdlib=libc++'
+cccc='xcrun clang++ -g -O0'
 dddd=dwarfdump
 ddddan='dwarfdump --apple-names'
 dddddl='dwarfdump --debug-line'
