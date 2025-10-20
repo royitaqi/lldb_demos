@@ -1,6 +1,6 @@
-# One-Level Template
+# One-Level Template (`one.cpp`)
 
-## Use *classic* linker
+## Baseline (use the default options: `-glldb` and *classic* linker)
 ```
 cccc -c one.cpp
 cccc one.o
@@ -12,6 +12,24 @@ lldb a.out -o "b one.cpp:10" -o "r" -o "p barInt" -o "quit"
 The printed DWARF contains two `typedef` DIE's:
 1. First `BarInt` which is a `typedef` of `Foo<int>`.
 2. Second `BarInt` which is a `typedef` of the first `BarInt`.
+
+LLDB can print `BarInt` as the type:
+```
+(lldb) p barInt
+(BarInt)  {}
+```
+
+## Use `-ggdb`
+```
+cccc -c -ggdb one.cpp
+cccc one.o
+dsymutil -o a.out.dSYM a.out
+dddd a.out.dSYM
+lldb a.out -o "b one.cpp:10" -o "r" -o "p barInt" -o "quit"
+```
+
+The printed DWARF contains one `typedef` DIE:
+1. A `BarInt` which is a `typedef` of `Foo<int>`.
 
 LLDB can print `BarInt` as the type:
 ```
@@ -38,21 +56,23 @@ zsh: illegal hardware instruction  lldb a.out -o "b one.cpp:10" -o "r" -o "p bar
 ```
 
 
-# Two-Level Template
+# Two-Level Template (`two.cpp`)
 
-## Without indirection typedef
+## Baseline
 ```
-cccc -c -ggdb two.cpp
+cccc -c two.cpp
 cccc two.o
 dsymutil -o a.out.dSYM a.out
 dddd a.out.dSYM
 lldb a.out -o "b two.cpp:10" -o "r" -o "p fooBarInt" -o "quit"
 ```
 
-The printed DWARF contains no `typedef` DIE.
 
-LLDB can print `BarInt` as the type:
+## Use `-ggdb`
 ```
-(lldb) p fooBarInt
-(Foo<Foo<int> >)  {}
+cccc -c -ggdb two.cpp
+cccc two.o
+dsymutil -o a.out.dSYM a.out
+dddd a.out.dSYM
+lldb a.out -o "b two.cpp:10" -o "r" -o "p fooBarInt" -o "quit"
 ```
